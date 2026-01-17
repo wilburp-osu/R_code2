@@ -13,7 +13,7 @@ data.list<-list()
 species<-c("POSE","ARTR","ACMI","ELEL")
 
 for (s in species ) {
-  data.list[[s]]<-read.csv(paste0("Data/",s,"_Data/SA_",s,"_Data_FINAL.csv"))
+  data.list[[s]]<-read.csv(paste0("Data/",s,"_Data/",s,"_Data_FINAL.csv"))
 }
 
 str(data.list)

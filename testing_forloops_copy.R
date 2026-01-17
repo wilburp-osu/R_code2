@@ -68,5 +68,5 @@ for (s in species) {
 }
 
 #### read in data ####
-POSE<-read.csv("Data/POSE_Data/SA_POSE_Data_01_08_25.csv")
+# POSE<-read.csv("Data/POSE_Data/POSE_Data_FINAL.csv")
 #days<-unique(POSE$Day_Collected)

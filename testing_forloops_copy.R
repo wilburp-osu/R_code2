@@ -99,6 +99,21 @@ for (s in species) {
 #2: In as.numeric(paste0(temp$Shoot_Pheno_Code)) :
   #NAs introduced by coercion
 
-#### read in data ####
-#POSE<-read.csv("Data/POSE_Data/POSE_Data_FINAL.csv")
-#days<-unique(POSE$Day_Collected)
+### aggregate data for each cuvette for each day
+for (s in species) {
+temp_agg<-aggregate(cbind(temp$Avg_Root_rate,
+                          temp$Avg_Shoot_rate),
+                    by=list(temp$Day_Scale_7,temp$Night_Scale_7,
+                            temp$Treatment,
+                            temp$Group),mean,na.rm=T)
+
+temp_agg[temp_agg =="NaN"]<-NA
+names(temp_agg)<-c("Day_Temp","Night_Temp","Treatment",
+                  "Group","Avg_Root_rate","Avg_Shoot_rate")
+
+
+temp_agg$Temp_Ratio<-temp_agg$Day_Temp/temp_agg$Night_Temp
+temp_agg$Treatment<-as.factor(paste0(temp_agg$Treatment))
+temp_agg$Day_Temp_Scale<-scale(temp_agg$Day_Temp)
+temp_agg$Night_Temp_Scale<-scale(temp_agg$Night_Temp)
+}

@@ -22,11 +22,10 @@ for (s in species ) {
   data.list[[s]]<-read.csv(paste0("Data/",s,"_Data/",s,"_Data_FINAL.csv"))
 }
 
-####GROWTH RATES####
-
-###Join Strings
 str(data.list)
 clean.data.list<-list()
+
+####GROWTH RATES###
 
 for (s in species) {
   temp<-data.list[[s]]

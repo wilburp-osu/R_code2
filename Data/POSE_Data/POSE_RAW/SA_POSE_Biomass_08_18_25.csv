@@ -1,0 +1,85 @@
+﻿Species,Treatment,Treatment_Long,Treatment_Val,Day_Installed,Month_Installed,Year_Installed,Day_Weighed,Month_Weighed,Year_Weighed,Group,Column,Row,Root_Biomass_g,Shoot_Biomass_g,Num_Plants_RT,Num_Plants_SH,AVG_RT_BMSS_g,AVG_SH_BMSS_g,Corrections
+POSE,C,Control,0.0,21,6,2025,,7,2025,1,1,1,0.0004,0.0024,4,4,0.0001,0.0006,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,1,1,1,0.0003,0.0011,2,2,0.00015,0.00055,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,1,1,1,0.0007,0.0016,3,3,0.000233333,0.000533333,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,1,1,1,0.0006,0.001,4,4,0.00015,0.00025,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,9,3,3,0.0007,0.0013,4,4,0.000175,0.000325,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,9,3,3,0.001,0.0017,4,4,0.00025,0.000425,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,9,3,3,0.0009,0.0014,3,3,0.0003,0.000466667,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,9,3,3,0.0003,0.0007,3,3,0.0001,0.000233333,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,17,5,5,0.0003,0.0009,3,3,0.0001,0.0003,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,17,5,5,0.0006,0.0014,3,4,0.0002,0.00035,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,17,5,5,0.0011,0.0014,4,4,0.000275,0.00035,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,17,5,5,0.0009,0.0008,4,4,0.000225,0.0002,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,25,7,7,0.0011,0.0013,3,3,0.000366667,0.000433333,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,25,7,7,0.0009,0.0013,4,4,0.000225,0.000325,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,25,7,7,0.0007,0.001,4,4,0.000175,0.00025,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,25,7,7,0.002,0.0014,3,3,0.000666667,0.000466667,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,33,9,9,0.0011,0.0015,4,4,0.000275,0.000375,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,33,9,9,0.0009,0.0012,3,3,0.0003,0.0004,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,33,9,9,0.0011,0.0013,4,4,0.000275,0.000325,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,33,9,9,0.0003,0.0008,2,2,0.00015,0.0004,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,41,11,11,0.0006,0.002,4,4,0.00015,0.0005,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,41,11,11,0.0008,0.0013,4,4,0.0002,0.000325,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,41,11,11,0.0003,0.0008,4,4,0.000075,0.0002,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,41,11,11,0.001,0.0009,4,4,0.00025,0.000225,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,49,13,13,0.0009,0.0011,4,4,0.000225,0.000275,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,49,13,13,0.0006,0.0007,4,4,0.00015,0.000175,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,49,13,13,0.0002,0.0006,3,2,6.66667E-05,0.0003,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,49,13,13,0.0005,0.0005,3,2,0.000166667,0.00025,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,43,1,13,0.0004,0.0002,2,1,0.0002,0.0002,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,43,1,13,0.0003,0.0001,2,2,0.00015,0.00005,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,43,1,13,0.0002,0.0005,2,2,0.0001,0.00025,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,43,1,13,0.0001,0.0005,3,3,3.33333E-05,0.000166667,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,37,3,11,0.0007,0.0008,4,4,0.000175,0.0002,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,37,3,11,0.0003,0.0005,3,3,0.0001,0.000166667,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,37,3,11,0.0003,0.0009,4,4,0.000075,0.000225,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,37,3,11,0.0007,0.001,4,4,0.000175,0.00025,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,31,5,9,0.0011,0.0013,4,4,0.000275,0.000325,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,31,5,9,0.0005,0.0012,4,4,0.000125,0.0003,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,31,5,9,0.0001,0.001,3,3,3.33333E-05,0.000333333,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,31,5,9,0.0003,0.0018,4,4,0.000075,0.00045,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,19,9,5,0.0004,0.001,4,4,0.0001,0.00025,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,19,9,5,0.0006,0.0006,3,3,0.0002,0.0002,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,19,9,5,0.0001,0.0009,2,2,0.00005,0.00045,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,19,9,5,0.0014,0.0014,4,4,0.00035,0.00035,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,13,11,3,0.0006,0.0016,4,4,0.00015,0.0004,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,13,11,3,0.0008,0.0014,4,4,0.0002,0.00035,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,13,11,3,0.0011,0.0015,4,4,0.000275,0.000375,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,13,11,3,0.0009,0.0015,4,4,0.000225,0.000375,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,7,13,1,0.0003,0.0003,2,2,0.00015,0.00015,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,7,13,1,0.0004,0.0009,4,4,0.0001,0.000225,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,7,13,1,0.0012,0.001,2,2,0.0006,0.0005,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,7,13,1,0.0004,0.0009,2,2,0.0002,0.00045,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,22,1,7,0.0008,0.0013,3,3,0.000266667,0.000433333,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,22,1,7,0.0002,0.0002,1,1,0.0002,0.0002,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,22,1,7,0.0005,0.0006,3,3,0.000166667,0.0002,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,22,1,7,0.0003,0.0006,2,2,0.00015,0.0003,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,4,7,1,0.0004,0.0008,2,2,0.0002,0.0004,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,4,7,1,0.0003,0.0008,2,2,0.00015,0.0004,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,4,7,1,0.001,0.0016,4,4,0.00025,0.0004,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,4,7,1,0.0013,0.0022,4,4,0.000325,0.00055,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,46,7,13,0.0007,0.0013,4,4,0.000175,0.000325,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,46,7,13,0.0003,0.0003,1,2,0.0003,0.00015,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,46,7,13,0.0003,0.0004,2,2,0.00015,0.0002,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,46,7,13,0.0002,0.0009,3,3,6.66667E-05,0.0003,Need  to verify counts with scans
+POSE,C,Control,0.0,21,6,2025,,7,2025,28,13,7,0.0005,0.0007,3,3,0.000166667,0.000233333,Need  to verify counts with scans
+POSE,W,Water Only,0.0,21,6,2025,,7,2025,28,13,7,0.0003,0.001,4,4,0.000075,0.00025,Need  to verify counts with scans
+POSE,L,Low SA Level,0.5,21,6,2025,,7,2025,28,13,7,0.0013,0.0014,4,4,0.000325,0.00035,Need  to verify counts with scans
+POSE,H,High SA Level,1.0,21,6,2025,,7,2025,28,13,7,0.0004,0.0009,3,3,0.000133333,0.0003,Need  to verify counts with scans
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,
+,,,,,,,,,,,,,,,,,,,

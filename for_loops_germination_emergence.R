@@ -10,7 +10,7 @@ library(tidyverse)
 library(plotly)
 
 #Set WD
-setwd("C:/Users/18034/Dropbox/PC/Desktop/Martyn_Lab/Peter_Thermodatatable_entry/4_SA")
+setwd("C:/Users/18034/Dropbox/PC/Desktop/R_code/R_code2")
 
 #create open list
 data.list<-list()
@@ -216,16 +216,14 @@ str(agg.list2)
 prediction.list.emerg<- list()
 
 for (s in species){
-  
   shootDaysfit <- shootDaysfit.list[[s]]
-  temp_agg<-agg.list2[[s]]
   pnew.data.emerg<-agg.list2[[s]]
 
   pnew.data.emerg$Prediction<-predict(shootDaysfit,pnew.data.emerg)
   pnew.data.emerg$Prediction_back<-exp(pnew.data.emerg$Prediction)
   print(ggplot(pnew.data.emerg,aes(x=temp_agg2$emerg_rate,y=Prediction_back,col=Treatment))+
     geom_point()+geom_abline(slope=1)+theme_minimal()+ labs(title = paste0(s)))
- 
+
   plotly_x<-matrix(pnew.data.emerg$Day_Temp[which(pnew.data.emerg$Treatment=="H")],byrow=T,ncol=7)
   plotly_y<-matrix(pnew.data.emerg$Night_Temp[which(pnew.data.emerg$Treatment=="H")],byrow=T,ncol=7)
   plotly_zH<-matrix(pnew.data.emerg$Prediction_back[which(pnew.data.emerg$Treatment=="H")],byrow = T,ncol=7)
@@ -239,7 +237,7 @@ for (s in species){
   fig.emerg <- fig.emerg %>% add_surface(z = ~plotly_zH, opacity = 0.5, colorscale = list(c(0,1),c("rgb(255,107,184)","rgb(128,0,64)"))) #pink
   print(fig.emerg)
 
-  print(summary(pnew.data$Prediction_back))
+  print(summary(pnew.data.emerg$Prediction_back))
 
   prediction.list.emerg[[s]] <- pnew.data.emerg
 }

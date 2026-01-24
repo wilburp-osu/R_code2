@@ -1,4 +1,5 @@
-rm(list=ls())
+######################################
+rm(list=ls()) # clear workspace
 # read in libraries ####
 library(raster)
 library(terra)
@@ -9,7 +10,7 @@ library(glmmTMB)
 library(tidyverse)
 library(plotly)
 
-
+######################################
 #create open list
 data.list<-list()
 #create species names
@@ -55,7 +56,7 @@ for (s in species){
           temp$days_til_germ[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-Days
         } else {
           temp$germ_rate[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
-          temp$days_til_germ[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
+          temp$days_til_germ[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-NA
         }
         if (any(temp_seed$Shoot_Pheno_Code==6)){
           Days2<-temp_seed$Days_Since_Install[which(temp_seed$Shoot_Pheno_Code==6)]
@@ -65,7 +66,7 @@ for (s in species){
           temp$days_til_emerg[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-Days2  
         } else {
           temp$emerg_rate[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
-          temp$days_til_emerg[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
+          temp$days_til_emerg[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-NA
         }
       }
     }
@@ -130,6 +131,7 @@ for (s in species){
   
 }
 
+######################################
 # germination glmmTMB ####
 
 # should I put this in and change the first section: rootDaysfit.full.list <- list()?
@@ -143,7 +145,8 @@ for (s in species){
                           Day_Scale_7:Treatment+Night_Scale_7:Treatment+
                           Treatment+Day_Scale_7:Night_Scale_7+
                           Day_Scale_7:Night_Scale_7:Treatment,
-                        family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2)
+                        family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2,
+                        control = glmmTMBControl(optimizer = optim, optArgs = list(method="BFGS")))
   print(summary(rootDaysfull))
   # 
   # ##why both named rootDaysfit? should I rename?## ## I corrected this (good catch)
@@ -212,14 +215,14 @@ for (s in species){
   pnew.data <- prediction.list[[s]]
   temp_agg2 <- agg.list2[[s]]
   
-  for (i in unique(temp_agg2$Group)){
-    tempp<-temp_agg2[which(temp_agg2$Group==i),]
-    if (all(tempp$days_til_germ==0)) {
-      print (i)
-    }
-  }
+  # for (i in unique(temp_agg2$Group)){
+  #   tempp<-temp_agg2[which(temp_agg2$Group==i),]
+  #   if (all(tempp$days_til_germ==0)) {
+  #     print (i)
+  #   }
+  # }
   
-  mid.pointss<-mean(temp_agg2$days_til_germ[which(temp_agg2$Treatment=="C")])
+  mid.pointss<-mean(temp_agg2$days_til_germ[which(temp_agg2$Treatment=="C")],na.rm=T)
   print(mid.pointss)
   germplot <- ggplot(pnew.data,aes(x=Day_Scale_7,y=Night_Scale_7))+
     geom_raster(aes(fill=Prediction_back))+ #, interpolate=T
@@ -235,6 +238,7 @@ for (s in species){
   
 }
 
+######################################
 # emergence glmmTMB models #####
 
 #shootDaysfit.list <-list()
@@ -248,7 +252,8 @@ for (s in species){
                           Treatment+Day_Scale_7:Night_Scale_7+
                           Day_Scale_7:Night_Scale_7:Treatment,
                         family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2,
-                        control = glmmTMBControl(optimizer = optim, optArgs = list(method="BFGS")))
+                        control = glmmTMBControl(optimizer = optim, 
+                                                 optArgs = list(method="BFGS")))
   print(summary(shootDaysfull))
   # interactions between treatment and temps are not significant so dropped them
   # if (s == "POSE"){
@@ -265,14 +270,26 @@ for (s in species){
   #   print(summary(shootDaysfit))
   # }
   
-  if (s == "ACMI" | s=="ELEL"){
+  if (s == "ACMI" ){
     shootDaysfull<-glmmTMB(days_til_emerg~(1|Group)+Day_Scale_7+Night_Scale_7+
                             Day_Scale_7:Treatment+Night_Scale_7:Treatment+
-                            Treatment+Day_Scale_7:Night_Scale_7,
+                            Treatment,
                           family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2,
-                          control = glmmTMBControl(optimizer = optim, optArgs = list(method="BFGS")))
-    print(summary(rootDaysfull))
+                          control = glmmTMBControl(optimizer = optim, 
+                                                   optArgs = list(method="BFGS")))
+    print(summary(shootDaysfull))
   }
+  
+  if (s=="ELEL"){
+    shootDaysfull<-glmmTMB(days_til_emerg~(1|Group)+Day_Scale_7+Night_Scale_7+
+                             Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                             Treatment,
+                           family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2,
+                           control = glmmTMBControl(optimizer = optim, 
+                                                    optArgs = list(method="BFGS")))
+    print(summary(shootDaysfull))
+  }
+  
   
   # if (s == "ELEL") {
   #   shootDaysfit<-glmmTMB(I(emerg_rate)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale +
@@ -293,16 +310,16 @@ prediction.list.emerg<- list()
 
 ## make plots for emergence ######
 for (s in species){
-  shootDaysfit <- shootDaysfit.list[[s]]
+  shootDaysfit <- shootDaysfull.list[[s]]
   pnew.data.emerg<-agg.list2[[s]]
   #pnew.data.emerg<-temp_agg2[which(temp_agg2$emerg_rate>0),]
   pnew.data.emerg$Prediction<-predict(shootDaysfit,pnew.data.emerg,allow.new.levels=TRUE)
   pnew.data.emerg$Prediction_back<-exp(pnew.data.emerg$Prediction)
-  print(ggplot(pnew.data.emerg,aes(x=temp_agg2$emerg_rate,y=Prediction_back,col=Treatment))+
-          geom_point()+geom_abline(slope=1)+theme_minimal()+ labs(title = paste0(s,"_Emergence")))
+  #print(ggplot(pnew.data.emerg,aes(x=days_til_emerg,y=Prediction_back,col=Treatment))+
+  #        geom_point()+geom_abline(slope=1)+theme_minimal()+ labs(title = paste0(s,"_Emergence")))
   
-  plotly_x<-matrix(pnew.data.emerg$Day_Temp[which(pnew.data.emerg$Treatment=="H")],byrow=T,ncol=7)
-  plotly_y<-matrix(pnew.data.emerg$Night_Temp[which(pnew.data.emerg$Treatment=="H")],byrow=T,ncol=7)
+  plotly_x<-matrix(pnew.data.emerg$Day_Scale_7[which(pnew.data.emerg$Treatment=="H")],byrow=T,ncol=7)
+  plotly_y<-matrix(pnew.data.emerg$Night_Scale_7[which(pnew.data.emerg$Treatment=="H")],byrow=T,ncol=7)
   plotly_zH<-matrix(pnew.data.emerg$Prediction_back[which(pnew.data.emerg$Treatment=="H")],byrow = T,ncol=7)
   plotly_zL<-matrix(pnew.data.emerg$Prediction_back[which(pnew.data.emerg$Treatment=="L")],byrow = T,ncol=7)
   plotly_zW<-matrix(pnew.data.emerg$Prediction_back[which(pnew.data.emerg$Treatment=="W")],byrow = T,ncol=7)
@@ -321,12 +338,20 @@ for (s in species){
 
 for (s in species){
   pnew.data.emerg <- prediction.list.emerg[[s]]
-  #temp_agg2 <- agg.list2[[s]]
-  mid.pointss<-median(pnew.data.emerg$Prediction_back)
-  emerg.plot<- ggplot(pnew.data,aes(x=Day_Temp_Scale,y=Night_Temp_Scale))+
+  temp_agg2 <- agg.list2[[s]]
+  
+  # for (i in unique(temp_agg2$Group)){
+  #   tempp<-temp_agg2[which(temp_agg2$Group==i),]
+  #   if (all(tempp$days_til_germ==0)) {
+  #     print (i)
+  #   }
+  # }
+  
+  mid.pointss<-mean(temp_agg2$days_til_emerg[which(temp_agg2$Treatment=="C")],na.rm=T)
+  emerg.plot<- ggplot(pnew.data.emerg,aes(x=Day_Scale_7,y=Night_Scale_7))+
     geom_raster(aes(fill=Prediction_back))+
     facet_grid(.~Treatment)+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+    scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                          midpoint = mid.pointss, space = "Lab",
                          name="Emergence Rate (1/days til emergence)") +
     theme_minimal()+

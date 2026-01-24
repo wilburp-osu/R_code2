@@ -38,6 +38,8 @@ for (s in species){
   
   temp$germ_rate<-NA
   temp$emerg_rate<-NA
+  temp$days_til_germ<-NA
+  temp$days_til_emerg<-NA
   
   ###  calculate days til emergence and germination ####
   
@@ -50,16 +52,20 @@ for (s in species){
           if (length(Days)>1){
             print(paste0(c("1s",s,Days,i,t,c),collapse="_"))} #print errors for doubling up 1's
           temp$germ_rate[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-1/Days
+          temp$days_til_germ[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-Days
         } else {
           temp$germ_rate[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
+          temp$days_til_germ[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
         }
         if (any(temp_seed$Shoot_Pheno_Code==6)){
           Days2<-temp_seed$Days_Since_Install[which(temp_seed$Shoot_Pheno_Code==6)]
           if (length(Days2)>1){
             print(paste0(c("6s",s,Days2,i,t,c),collapse="_"))} #print errors for doubling up 6's
           temp$emerg_rate[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-1/Days2  
+          temp$days_til_emerg[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-Days2  
         } else {
           temp$emerg_rate[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
+          temp$days_til_emerg[which(temp$Group==i & temp$Treatment==t & temp$Cell==c)]<-0
         }
       }
     }
@@ -80,17 +86,20 @@ for (s in species) {
   temp_agg<-aggregate(cbind(temp$Shoot_Pheno_Code,
                             temp$Root_Pheno_Code,
                             temp$germ_rate,
-                            temp$emerg_rate),
+                            temp$emerg_rate,
+                            temp$days_til_emerg,
+                            temp$days_til_germ),
                       by=list(temp$Day_Scale_7,temp$Night_Scale_7,
                               temp$Treatment,
                               temp$Days_Since_Install,
                               temp$Group),mean,na.rm=T)
   
   temp_agg[temp_agg =="NaN"]<-NA
-  names(temp_agg)<-c("Day_Temp","Night_Temp","Treatment",
+  names(temp_agg)<-c("Day_Scale_7","Night_Scale_7","Treatment",
                      "Days_Since_Install","Group",
                      "Root_Pheno_Code","Shoot_Pheno_Code",
-                     "germ_rate","emerg_rate")
+                     "germ_rate","emerg_rate",
+                     "days_til_emerg","days_til_germ")
   agg.list[[s]] <- temp_agg
 }
 
@@ -102,17 +111,20 @@ agg.list2<-list()
 for (s in species){
   temp_agg <- agg.list[[s]]
   temp_agg2<-aggregate(cbind(temp_agg$germ_rate,
-                             temp_agg$emerg_rate),
-                       by=list(temp_agg$Day_Temp,temp_agg$Night_Temp,
+                             temp_agg$emerg_rate,
+                             temp_agg$days_til_germ,
+                             temp_agg$days_til_emerg),
+                       by=list(temp_agg$Day_Scale_7,temp_agg$Night_Scale_7,
                                temp_agg$Treatment,
                                temp_agg$Group),mean,na.rm=T)
   
   temp_agg2[temp_agg2 =="NaN"]<-NA
-  names(temp_agg2)<-c("Day_Temp","Night_Temp","Treatment",
-                      "Group","germ_rate","emerg_rate")
+  names(temp_agg2)<-c("Day_Scale_7","Night_Scale_7","Treatment",
+                      "Group","germ_rate","emerg_rate",
+                      "days_til_germ","days_til_emerg")
   
-  temp_agg2$Day_Temp_Scale<-scale(temp_agg2$Day_Temp)
-  temp_agg2$Night_Temp_Scale<-scale(temp_agg2$Night_Temp)
+  #temp_agg2$Day_Temp_Scale<-scale(temp_agg2$Day_Temp)
+  #temp_agg2$Night_Temp_Scale<-scale(temp_agg2$Night_Temp)
   
   agg.list2[[s]] <- temp_agg2
   
@@ -126,58 +138,58 @@ rootDaysfit.list <-list()
 rootDaysfit.full.list <- list()
 for (s in species){
   print(s)
-  temp_agg2 <- agg.list2[[s]]
-  rootDaysfull<-glmmTMB(I(germ_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
-                          Day_Temp_Scale:Treatment+Night_Temp_Scale:Treatment+
-                          Treatment+Day_Temp_Scale:Night_Temp_Scale+
-                          Day_Temp_Scale:Night_Temp_Scale:Treatment,
-                        family=Gamma(link="log"),data=temp_agg2)
+  temp_agg2 <- clean.data.list[[s]]
+  rootDaysfull<-glmmTMB(days_til_germ~(1|Group)+Day_Scale_7+Night_Scale_7+
+                          Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                          Treatment+Day_Scale_7:Night_Scale_7+
+                          Day_Scale_7:Night_Scale_7:Treatment,
+                        family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2)
   print(summary(rootDaysfull))
-  
-  ##why both named rootDaysfit? should I rename?## ## I corrected this (good catch)
-  
-  rootDaysfit<-glmmTMB(I(germ_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
-                         Treatment+Day_Temp_Scale:Night_Temp_Scale,
-                       family=Gamma(link="log"),data=temp_agg2)
-  print(summary(rootDaysfit))
-  
-  if (s=="ACMI") {
-    rootDaysfit<-glmmTMB(I(germ_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
-                           Day_Temp_Scale:Night_Temp_Scale,
-                         family=Gamma(link="log"),data=temp_agg2)
-    print(summary(rootDaysfit))
-  }
-  
-  if (s=="ARTR") {
-    rootDaysfit<-glmmTMB(I(germ_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale,
-                         family=Gamma(link="log"),data=temp_agg2)
-    print(summary(rootDaysfit))
-  }
-  
-  rootDaysfit.list[[s]] <- rootDaysfit
-  rootDaysfit.full.list[[s]] <- rootDaysfull
+  # 
+  # ##why both named rootDaysfit? should I rename?## ## I corrected this (good catch)
+  # 
+  # rootDaysfit<-glmmTMB(I(germ_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
+  #                        Treatment+Day_Temp_Scale:Night_Temp_Scale,
+  #                      family=Gamma(link="log"),data=temp_agg2)
+  # print(summary(rootDaysfit))
+  # 
+  # if (s=="ACMI") {
+  #   rootDaysfit<-glmmTMB(I(germ_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
+  #                          Day_Temp_Scale:Night_Temp_Scale,
+  #                        family=Gamma(link="log"),data=temp_agg2)
+  #   print(summary(rootDaysfit))
+  # }
+  # 
+  # if (s=="ARTR") {
+  #   rootDaysfit<-glmmTMB(I(germ_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale,
+  #                        family=Gamma(link="log"),data=temp_agg2)
+  #   print(summary(rootDaysfit))
+  # }
+  # 
+  # rootDaysfit.list[[s]] <- rootDaysfit
+   rootDaysfit.full.list[[s]] <- rootDaysfull
   
 }
 
 ## make plots for germiation #####
 
-str(agg.list)
-str(agg.list2)
+#str(agg.list)
+#str(agg.list2)
 prediction.list<- list()
 
 for (s in species){
   
-  rootDaysfit <- rootDaysfit.list[[s]]
-  temp_agg<-agg.list2[[s]]
+  rootDaysfit <- rootDaysfit.full.list[[s]]
+  #temp_agg<-agg.list2[[s]]
   pnew.data<-agg.list2[[s]]
   
   pnew.data$Prediction<-predict(rootDaysfit,pnew.data)
   pnew.data$Prediction_back<-exp(pnew.data$Prediction)
-  print(ggplot(pnew.data,aes(x=temp_agg2$germ_rate,y=Prediction_back,col=Treatment))+
-          geom_point()+geom_abline(slope=1)+theme_minimal()+ labs(title = paste0(s),"_Germination"))
+  #print(ggplot(pnew.data,aes(x=days_til_germ,y=Prediction_back,col=Treatment))+
+  #        geom_point()+geom_abline(slope=1)+theme_minimal()+ labs(title = paste0(s),"_Germination"))
   
-  plotly_x<-matrix(pnew.data$Day_Temp[which(pnew.data$Treatment=="H")],byrow=T,ncol=7)
-  plotly_y<-matrix(pnew.data$Night_Temp[which(pnew.data$Treatment=="H")],byrow=T,ncol=7)
+  plotly_x<-matrix(pnew.data$Day_Scale_7[which(pnew.data$Treatment=="H")],byrow=T,ncol=7)
+  plotly_y<-matrix(pnew.data$Night_Scale_7[which(pnew.data$Treatment=="H")],byrow=T,ncol=7)
   plotly_zH<-matrix(pnew.data$Prediction_back[which(pnew.data$Treatment=="H")],byrow = T,ncol=7)
   plotly_zL<-matrix(pnew.data$Prediction_back[which(pnew.data$Treatment=="L")],byrow = T,ncol=7)
   plotly_zW<-matrix(pnew.data$Prediction_back[which(pnew.data$Treatment=="W")],byrow = T,ncol=7)
@@ -196,13 +208,23 @@ for (s in species){
 }
 
 for (s in species){
+  print (s)
   pnew.data <- prediction.list[[s]]
   temp_agg2 <- agg.list2[[s]]
-  mid.pointss<-median(agg.list2[[s]]$germ_rate)
-  germplot <- ggplot(pnew.data,aes(x=Day_Temp_Scale,y=Night_Temp_Scale))+
+  
+  for (i in unique(temp_agg2$Group)){
+    tempp<-temp_agg2[which(temp_agg2$Group==i),]
+    if (all(tempp$days_til_germ==0)) {
+      print (i)
+    }
+  }
+  
+  mid.pointss<-mean(temp_agg2$days_til_germ[which(temp_agg2$Treatment=="C")])
+  print(mid.pointss)
+  germplot <- ggplot(pnew.data,aes(x=Day_Scale_7,y=Night_Scale_7))+
     geom_raster(aes(fill=Prediction_back))+ #, interpolate=T
     facet_grid(.~Treatment)+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+    scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                          midpoint = mid.pointss, space = "Lab",
                          name="Germination Rate (1/days til germ)") +
     theme_minimal()+
@@ -215,44 +237,51 @@ for (s in species){
 
 # emergence glmmTMB models #####
 
-shootDaysfit.list <-list()
+#shootDaysfit.list <-list()
 shootDaysfull.list <-list()
 for (s in species){
   print(s)
-  temp_agg2 <- agg.list2[[s]]
-  shootDaysfull<-glmmTMB(I(emerg_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
-                           Day_Temp_Scale:Treatment+Night_Temp_Scale:Treatment+
-                           Treatment+Day_Temp_Scale:Night_Temp_Scale,
-                         family=ziGamma(link="log"),data=temp_agg2,ziformula=~1)
+  temp_agg2 <- clean.data.list[[s]]
+  #hist(temp_agg2$days_til_emerg)
+  shootDaysfull<-glmmTMB(days_til_emerg~(1|Group)+Day_Scale_7+Night_Scale_7+
+                          Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                          Treatment+Day_Scale_7:Night_Scale_7+
+                          Day_Scale_7:Night_Scale_7:Treatment,
+                        family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2,
+                        control = glmmTMBControl(optimizer = optim, optArgs = list(method="BFGS")))
   print(summary(shootDaysfull))
   # interactions between treatment and temps are not significant so dropped them
-  if (s == "POSE"){
-    shootDaysfit<-glmmTMB(I(emerg_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
-                            Treatment,
-                          family=ziGamma(link="log"),data=temp_agg2,ziformula=~1)
-    print(summary(shootDaysfit))
+  # if (s == "POSE"){
+  #   shootDaysfit<-glmmTMB(I(emerg_rate)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
+  #                           Treatment,
+  #                         family=ziGamma(link="log"),data=temp_agg3,ziformula=~1)
+  #   print(summary(shootDaysfit))
+  # }
+  # 
+  # if (s=="ARTR"){
+  #   shootDaysfit<-glmmTMB(I(emerg_rate)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale+
+  #                           Treatment,
+  #                         family=ziGamma(link="log"),data=temp_agg3,ziformula=~1)
+  #   print(summary(shootDaysfit))
+  # }
+  
+  if (s == "ACMI" | s=="ELEL"){
+    shootDaysfull<-glmmTMB(days_til_emerg~(1|Group)+Day_Scale_7+Night_Scale_7+
+                            Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                            Treatment+Day_Scale_7:Night_Scale_7,
+                          family=nbinom2(link = "log"),ziformula=~1,data=temp_agg2,
+                          control = glmmTMBControl(optimizer = optim, optArgs = list(method="BFGS")))
+    print(summary(rootDaysfull))
   }
   
-  if (s=="ARTR"){
-    shootDaysfit<-glmmTMB(I(emerg_rate+0.0001)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale,
-                          family=ziGamma(link="log"),data=temp_agg2,ziformula=~1)
-    print(summary(shootDaysfit))
-  }
+  # if (s == "ELEL") {
+  #   shootDaysfit<-glmmTMB(I(emerg_rate)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale +
+  #                           Treatment,
+  #                         family=ziGamma(link="log"),data=temp_agg3,ziformula=~1)
+  #   print(summary(shootDaysfit))
+  # }
   
-  if (s == "ACMI"){
-    shootDaysfit<-glmmTMB(I(emerg_rate+0.0001)~(1|Group)+Day_Temp_Scale*Night_Temp_Scale,
-                          family=ziGamma(link="log"),data=temp_agg2,ziformula=~1)
-    print(summary(shootDaysfit))
-  }
-  
-  if (s == "ELEL") {
-    shootDaysfit<-glmmTMB(I(emerg_rate+0.0001)~(1|Group)+Day_Temp_Scale*Night_Temp_Scale +
-                            Treatment,
-                          family=ziGamma(link="log"),data=temp_agg2,ziformula=~1)
-    print(summary(shootDaysfit))
-  }
-  
-  shootDaysfit.list[[s]] <- shootDaysfit
+  #shootDaysfit.list[[s]] <- shootDaysfit
   shootDaysfull.list[[s]] <- shootDaysfull
 }
 
@@ -266,8 +295,8 @@ prediction.list.emerg<- list()
 for (s in species){
   shootDaysfit <- shootDaysfit.list[[s]]
   pnew.data.emerg<-agg.list2[[s]]
-  
-  pnew.data.emerg$Prediction<-predict(shootDaysfit,pnew.data.emerg)
+  #pnew.data.emerg<-temp_agg2[which(temp_agg2$emerg_rate>0),]
+  pnew.data.emerg$Prediction<-predict(shootDaysfit,pnew.data.emerg,allow.new.levels=TRUE)
   pnew.data.emerg$Prediction_back<-exp(pnew.data.emerg$Prediction)
   print(ggplot(pnew.data.emerg,aes(x=temp_agg2$emerg_rate,y=Prediction_back,col=Treatment))+
           geom_point()+geom_abline(slope=1)+theme_minimal()+ labs(title = paste0(s,"_Emergence")))
@@ -285,15 +314,15 @@ for (s in species){
   fig.emerg <- fig.emerg %>% add_surface(z = ~plotly_zH, opacity = 0.5, colorscale = list(c(0,1),c("rgb(255,107,184)","rgb(128,0,64)"))) #pink
   print(fig.emerg)
   
-  print(summary(pnew.data.emerg$Prediction_back))
+  #print(summary(pnew.data.emerg$Prediction_back))
   
   prediction.list.emerg[[s]] <- pnew.data.emerg
 }
 
 for (s in species){
   pnew.data.emerg <- prediction.list.emerg[[s]]
-  temp_agg2 <- agg.list2[[s]]
-  mid.pointss<-median(agg.list2[[s]]$emerg_rate)
+  #temp_agg2 <- agg.list2[[s]]
+  mid.pointss<-median(pnew.data.emerg$Prediction_back)
   emerg.plot<- ggplot(pnew.data,aes(x=Day_Temp_Scale,y=Night_Temp_Scale))+
     geom_raster(aes(fill=Prediction_back))+
     facet_grid(.~Treatment)+

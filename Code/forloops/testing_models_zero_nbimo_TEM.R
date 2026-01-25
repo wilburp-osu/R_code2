@@ -1,33 +1,4 @@
-######################################
-rm(list=ls()) # clear workspace
-# read in libraries ####
-library(raster)
-library(terra)
-library(lme4)
-library(lmerTest)
-library(emmeans)
-library(glmmTMB)
-library(tidyverse)
-library(plotly)
-
-######################################
-#create open list
-data.list<-list()
-#create species names
-species<-c("POSE","ARTR","ACMI","ELEL")
-
-# Read in data ####
-for (s in species ) {
-  raw.read<-read.csv(paste0("Data/",s,"_Data/",s,"_Data_FINAL.csv"))
-  if (any(is.na(raw.read$Group))){
-    raw.read2<-raw.read[-which(is.na(raw.read$Group)),]
-  } else {raw.read2<-raw.read}
-  data.list[[s]]<-raw.read2
-}
-
-#days<-unique(POSE$Day_Collected)
-
-str(data.list)
+#str(data.list)
 clean.data.list<-list()
 
 for (s in species){
@@ -180,6 +151,7 @@ for (s in species){
 #str(agg.list2)
 prediction.list<- list()
 
+### 3D figs ####
 for (s in species){
   
   rootDaysfit <- rootDaysfit.full.list[[s]]
@@ -210,6 +182,7 @@ for (s in species){
   
 }
 
+### raster figs ####
 for (s in species){
   print (s)
   pnew.data <- prediction.list[[s]]
@@ -232,9 +205,15 @@ for (s in species){
                          name="Germination Rate (1/days til germ)") +
     theme_minimal()+
     theme(legend.position = "bottom")+
+    ylab("Night Temperature (C)")+
+    xlab("Day Temperature (C)")+
     labs(title = paste0(s))
   
+  
+  CairoPNG(file.path(paste0("Figures/",s,"_Days_til_Germ_raster.png")), width = 12, height = 7, units = "in",
+           res = 300)
   print(germplot)
+  dev.off()
   
 }
 
@@ -309,6 +288,7 @@ str(agg.list2)
 prediction.list.emerg<- list()
 
 ## make plots for emergence ######
+### 3D figs ####
 for (s in species){
   shootDaysfit <- shootDaysfull.list[[s]]
   pnew.data.emerg<-agg.list2[[s]]
@@ -336,6 +316,7 @@ for (s in species){
   prediction.list.emerg[[s]] <- pnew.data.emerg
 }
 
+### raster figs ####
 for (s in species){
   pnew.data.emerg <- prediction.list.emerg[[s]]
   temp_agg2 <- agg.list2[[s]]
@@ -355,9 +336,15 @@ for (s in species){
                          midpoint = mid.pointss, space = "Lab",
                          name="Emergence Rate (1/days til emergence)") +
     theme_minimal()+
+    ylab("Night Temperature (C)")+
+    xlab("Day Temperature (C)")+
     theme(legend.position = "bottom")+
     labs(title = paste0(s))
   
+  CairoPNG(file.path(paste0("Figures/",s,"_Days_til_Emerg_raster.png")), width = 12, height = 7, units = "in",
+           res = 300)
   print(emerg.plot)
+  dev.off()
+
   
 }

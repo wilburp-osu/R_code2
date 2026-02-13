@@ -268,7 +268,7 @@ for (s in species){
                                                     optArgs = list(method="BFGS")))
     print(summary(shootDaysfull))
   }
-  
+  ###Were these meant to be dropped too?^
   
   # if (s == "ELEL") {
   #   shootDaysfit<-glmmTMB(I(emerg_rate)~(1|Group)+Day_Temp_Scale+Night_Temp_Scale +

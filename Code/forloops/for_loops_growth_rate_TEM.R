@@ -1,5 +1,4 @@
 
-
 #str(data.list)
 clean.data.list<-list()
 
@@ -320,6 +319,7 @@ for (s in species){
   dev.off()
   
 }
+
 
 # #### plot raster root growth rate 
 # 

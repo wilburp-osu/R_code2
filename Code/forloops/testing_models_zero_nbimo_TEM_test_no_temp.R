@@ -46,7 +46,15 @@ for (s in species){
   clean.data.list[[s]]<-temp
   
 }
-
+############################### TEM comments
+# temp$unique_ID<-paste0(temp$Group,"_",temp$Treatment,"_",temp$Cell)
+# add unqiue ID into the clean data dataframes.
+# remove all columns not needed
+# what columns we need are... c("Group","days_til_emerg",
+#         "days_til_germ","Treatment","Day_Scale_7","Night_Scale_7","unique_ID)
+# then unique(dataframe)
+# should have a dataframe with one row for each seed in the end 784 rows for each species
+# add back in (1|Group)
 
 ### aggregate data for each cuvette for each day ######
 

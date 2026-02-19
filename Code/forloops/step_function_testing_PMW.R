@@ -79,8 +79,8 @@ for (s in species){
 }
 
 ### aggregate data for each cuvette for each day ######
-view(clean.data.list)
-str(clean.data.list)
+#view(clean.data.list)
+#str(clean.data.list)
 
 clean.data.list.short<-list()
 
@@ -171,14 +171,31 @@ for (s in species){
 for (s in species){
   
   print(s)
-  temp_agg2 <- short.data.list2[[s]] 
+  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_germ") #select the columns I want for the germ model
+  temp_agg2_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
   
-  global.model<-glm(days_til_germ~Day_Scale_7+Night_Scale_7+ Treatment,
-                    family=poisson(link = "log"),data=temp_agg2)
   
-  models.step<- step(global.model)
+  
+  #fit the null model
+  null.model<-glm(days_til_germ~. ,
+                  family=poisson(link = "log"),data=temp_agg2_germ)
+  
+  #fit the global models
+  global.model<-glm(days_til_germ~Day_Scale_7+Night_Scale_7+
+                      Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                      Treatment+Day_Scale_7:Night_Scale_7+
+                      Day_Scale_7:Night_Scale_7:Treatment,
+                    family=poisson(link = "log"),data=temp_agg2_germ)
+  
+  #run the step function in both directions bounded by the null and global model
+  models.step<- step(null.model,direction="both",scope = list(lower=null.model, upper=global.model))
+  
+  print(summary(models.step))
+  #models.step$anova
   
 }
+
 
 #emerg
 for (s in species){
@@ -190,18 +207,6 @@ for (s in species){
                       Day_Scale_7:Treatment+Night_Scale_7:Treatment+
                       Treatment+Day_Scale_7:Night_Scale_7+
                       Day_Scale_7:Night_Scale_7:Treatment,
-                    family=poisson(link = "log"),data=temp_agg2)
-  
-  models.step<- step(global.model)
-  
-}
-
-for (s in species){
-  
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] 
-  
-  global.model<-glm(days_til_emerg~Day_Scale_7+Night_Scale_7+ Treatment,
                     family=poisson(link = "log"),data=temp_agg2)
   
   models.step<- step(global.model)
@@ -225,17 +230,6 @@ for (s in species){
   
 }
 
-for (s in species){
-  
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] 
-  
-  global.model<-glm(germ_rate~Day_Scale_7+Night_Scale_7+ Treatment,
-                    family=Gamma(link = "log"),data=temp_agg2)
-  
-  models.step<- step(global.model)
-  
-}
 
 #Emerg Rate
 
@@ -248,18 +242,6 @@ for (s in species){
                       Day_Scale_7:Treatment+Night_Scale_7:Treatment+
                       Treatment+Day_Scale_7:Night_Scale_7+
                       Day_Scale_7:Night_Scale_7:Treatment,
-                    family=Gamma(link = "log"),data=temp_agg2)
-  
-  models.step<- step(global.model)
-  
-}
-
-for (s in species){
-  
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] 
-  
-  global.model<-glm(emerg_rate~Day_Scale_7+Night_Scale_7+ Treatment,
                     family=Gamma(link = "log"),data=temp_agg2)
   
   models.step<- step(global.model)
@@ -287,24 +269,6 @@ for (s in species){
   
 }
 
-
-for (s in species){
-  
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] 
-  
-  global.model<- glmmTMB(days_til_germ~Day_Scale_7+Night_Scale_7+Treatment,
-                         family=poisson(link = "log"),ziformula=~1,
-                         data=temp_agg2,
-                         control = glmmTMBControl(optimizer = optim, 
-                                                  optArgs = list(method="BFGS")))
-  
- 
-  models.step<- step(global.model)
-  
-  
-}
-
 #Emerg
 
 for (s in species){
@@ -322,23 +286,6 @@ for (s in species){
                                                   optArgs = list(method="BFGS")))
   
   models.step<- step(global.model)
-  
-}
-
-
-for (s in species){
-  
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] 
-  
-  global.model<- glmmTMB(days_til_emerg~Day_Scale_7+Night_Scale_7+Treatment,
-                         family=poisson(link = "log"),ziformula=~1,
-                         data=temp_agg2,
-                         control = glmmTMBControl(optimizer = optim, 
-                                                  optArgs = list(method="BFGS")))
-  
-  models.step<- step(global.model)
-  
   
 }
 
@@ -362,21 +309,6 @@ for (s in species){
   
 }
 
-for (s in species){
-  
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] 
-  
-  global.model<- glmmTMB(germ_rate~Day_Scale_7+Night_Scale_7+Treatment,
-                         family=Gamma(link="log"),data=temp_agg2,
-                         control = glmmTMBControl(optimizer = optim, 
-                                                  optArgs = list(method="BFGS")))
-  
-  
-  models.step<- step(global.model)
-  
-}
-
 #emerg rate
 
 for (s in species){
@@ -388,21 +320,6 @@ for (s in species){
                            Day_Scale_7:Treatment+Night_Scale_7:Treatment+
                            Treatment+Day_Scale_7:Night_Scale_7+
                            Day_Scale_7:Night_Scale_7:Treatment,
-                         family=Gamma(link="log"),data=temp_agg2,
-                         control = glmmTMBControl(optimizer = optim, 
-                                                  optArgs = list(method="BFGS")))
-  
-  
-  models.step<- step(global.model)
-  
-}
-
-for (s in species){
-  
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] 
-  
-  global.model<- glmmTMB(emerg_rate~Day_Scale_7+Night_Scale_7+Treatment,
                          family=Gamma(link="log"),data=temp_agg2,
                          control = glmmTMBControl(optimizer = optim, 
                                                   optArgs = list(method="BFGS")))

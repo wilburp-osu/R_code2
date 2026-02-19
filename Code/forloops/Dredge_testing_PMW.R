@@ -325,7 +325,7 @@ for (s in species){
   print(s)
   temp_agg2 <- short.data.list2[[s]] 
   
-  global.model<- glmmTMB(days_til_germ~Day_Scale_7+Night_Scale_7+
+  global.model<- glmmTMB(days_til_emerg~Day_Scale_7+Night_Scale_7+
                            Day_Scale_7:Treatment+Night_Scale_7:Treatment+
                            Treatment+Day_Scale_7:Night_Scale_7+
                            Day_Scale_7:Night_Scale_7:Treatment,

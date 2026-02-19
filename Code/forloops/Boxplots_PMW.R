@@ -168,42 +168,209 @@ for (s in species){
 }
 
 ##PLOTS
+#with Trace notes
 
-short.data.list2[["POSE"]]$Temp_bin <- cut(short.data.list2[["POSE"]]$Day_Scale_7, breaks = 7)
+##Night
+#Germ
 
-ggplot(short.data.list2[["POSE"]], aes(x = Temp_bin, y = days_til_germ, 
-                                       fill = Night_Scale_7)) +
-  geom_boxplot() +
-  geom_line(aes(mean(days_til_germ)))
-
-
-
-# Create a scatter plot and facet by 'cut'
-ggplot(short.data.list2[["POSE"]], aes(x = Night_Scale_7, y = days_til_germ)) +
-  geom_point(alpha = 0.5) +
-  facet_wrap(~ Day_Scale_7, nrow= 1) + # This creates a separate plot for each 'cut' level
-  labs(title = "Days Til germ vs Night temp faceted by Day temp",
-       x = "Night Temp",
-       y = "Days til") #+
-  theme_minimal()
+for (s in species){
   
-## base r
+  temp_agg3 <- short.data.list2[[s]] 
   
-for  (s in species){
+  night.t.germ.boxplots <- ggplot(temp_agg3, aes(factor(round(Night_Scale_7,1)), days_til_germ,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Days Until Germ x Night Scale (", s, ")"),
+          x = "Night Temperature",
+          y = "Days Until Germination")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
   
-boxplot(short.data.list2[[s]]$days_til_germ~short.data.list2[[s]]$Night_Scale_7,
-        col="LightBlue",
-        main=paste0("germ_night (", s, ")"),
-        ylab="Days Until Germination",
-        xlab="Night Temperature")
+  print(night.t.germ.boxplots)
+  
+}  
 
-global.model<-lm(short.data.list2[[s]]$days_til_germ~
-                   short.data.list2[[s]]$Night_Scale_7)
+#Emerg
 
-abline(global.model,lwd=2)
+for (s in species){
+  
+  temp_agg3 <- short.data.list2[[s]] 
+  
+  night.t.emerg.boxplots <- ggplot(temp_agg3, aes(factor(round(Night_Scale_7,1)), days_til_emerg,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Days Until Emerg x Night Scale (", s, ")"),
+          x = "Night Temperature",
+          y = "Days Until Emergence")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+  
+  print(night.t.boxplots)
+  
+}  
 
+##DAY
+# Germ
+
+for (s in species){
+  
+  temp_agg3 <- short.data.list2[[s]] 
+  
+  day.t.germ.boxplots <- ggplot(temp_agg3, aes(factor(round(Day_Scale_7,2)), days_til_germ,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Days Until Germ x Day Scale (", s, ")"),
+          x = "Day Temperature",
+          y = "Days Until Germination")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+  
+  print(day.t.germ.boxplots)
+  
 }
+
+# Emerg
+
+for (s in species){
   
+  temp_agg3 <- short.data.list2[[s]] 
+  
+  day.t.emerg.boxplots <- ggplot(temp_agg3, aes(factor(round(Day_Scale_7,2)), days_til_emerg,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Days Until Emerg x Day Scale (", s, ")"),
+          x = "Day Temperature",
+          y = "Days Until Emergence")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+  
+  print(day.t.emerg.boxplots)
+  
+}
+
+### Rates
+#Night Scale
+
+#germ
+
+for (s in species){
+  
+  temp_agg3 <- short.data.list2[[s]] 
+  
+  night.t.grate.boxplots <- ggplot(temp_agg3, aes(factor(round(Night_Scale_7,1)), germ_rate,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Germ Rate x Night Scale (", s, ")"),
+          x = "Night Temperature",
+          y = "Germination Rate")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+  
+  print(night.t.grate.boxplots)
+  
+}  
+
+#emerg
+
+for (s in species){
+  
+  temp_agg3 <- short.data.list2[[s]] 
+  
+  night.t.erate.boxplots <- ggplot(temp_agg3, aes(factor(round(Night_Scale_7,1)), emerg_rate,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Emerg Rate x Night Scale (", s, ")"),
+          x = "Night Temperature",
+          y = "Emergence Rate")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+  
+  print(night.t.erate.boxplots)
+  
+}  
+
+#Day Scale
+
+#germ
+
+for (s in species){
+  
+  temp_agg3 <- short.data.list2[[s]] 
+  
+  day.t.grate.boxplots <- ggplot(temp_agg3, aes(factor(round(Day_Scale_7,1)), germ_rate,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Germ Rate x Day Scale (", s, ")"),
+          x = "Day Temperature",
+          y = "Germination Rate")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+  
+  print(day.t.grate.boxplots)
+  
+}  
+
+#emerg
+
+for (s in species){
+  
+  temp_agg3 <- short.data.list2[[s]] 
+  
+  day.t.erate.boxplots <- ggplot(temp_agg3, aes(factor(round(Day_Scale_7,1)), emerg_rate,fill=Treatment)) +
+    geom_smooth(se=F,aes(group=Treatment,col=Treatment),span = 1.5,size=2)+ ##put the line int he background
+    #geom_smooth(se=F,aes(group=Treatment,col="black"),span = 0.9,size=1)+ ##put the line int he background
+    geom_boxplot() +
+    stat_boxplot(geom ='errorbar',col="black") +
+    stat_summary(fun = "mean", geom = "point", size = 3, shape = 24,col="black",
+                 aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
+    labs( title = paste0("Emerg Rate x Day Scale (", s, ")"),
+          x = "Day Temperature",
+          y = "Emergence Rate")+
+    theme_minimal(base_size = 15)+
+    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
+    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+  
+  print(day.t.erate.boxplots)
+  
+}  
+
+
+## Leaving these below to have a record ##
 ## ggplot
 
 #night scale
@@ -270,10 +437,10 @@ for (s in species){
     
 temp_agg3 <- short.data.list2[[s]] 
     
-germ.rate.boxplots <- ggplot(temp_agg3, aes(factor(Night_Scale_7:Day_Scale_7), germ_rate)) +
+germ.rate.boxplots <- ggplot(temp_agg3, aes(factor(Night_Scale_7), germ_rate)) +
   geom_boxplot() +
   stat_boxplot(geom ='errorbar') +
-  geom_smooth(method = "lm", se=FALSE, color="black", aes(group=1))+
+  geom_smooth(method = "glm", se=FALSE, color="black", aes(group=1), size = 0.5)+
   stat_summary(fun = "mean", geom = "point", size = 3, shape = 15)+
   labs( title = paste0("Germ Rate x Night Temp (", s, ")"),
      # x = "Night Temp",

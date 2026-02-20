@@ -154,7 +154,7 @@ for (s in species){
 ## germination glm
 #should i be using (1|Group)?
 
-#parameters from dredge
+#parameters from step
 
 rootDaysfit.full.list <- list()
 
@@ -164,7 +164,7 @@ for (s in species){
   germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_germ") #select the columns I want for the germ model
   temp_agg2_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
   
-  rootDaysfull<-glm(days_til_germ~Day_Scale_7+Night_Scale_7,
+  rootDaysfull<-glm(days_til_germ~Treatment+Day_Scale_7+Night_Scale_7,
                     family=poisson(link = "log"),data=temp_agg2_germ)
   print(summary(rootDaysfull))
 
@@ -182,56 +182,19 @@ for (s in species){
      print(summary(rootDaysfull))
    }
   
-  rootDaysfit.full.list[[s]] <- rootDaysfull
-  
-}
-
-####
-#parameters from Step
-####
-
-rootDaysfit.full.list <- list()
-
-for (s in species){
-  print(s)
-  temp_agg2 <- short.data.list2[[s]] # pull out the data
-  germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_germ") #select the columns I want for the germ model
-  temp_agg2_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
-  
-  rootDaysfull<-glm(days_til_germ~Day_Scale_7+Night_Scale_7+Treatment,
-                    family=poisson(link = "log"),data=temp_agg2_germ)
-  print(summary(rootDaysfull))
-  
-  if (s=="ACMI") {
-    rootDaysfull<-glm(days_til_germ~Day_Scale_7+Night_Scale_7+Treatment+
-                        Day_Scale_7:Night_Scale_7+Treatment:Day_Scale_7,
-                      family=poisson(link = "log"),data=temp_agg2_germ)
-    print(summary(rootDaysfull))
-  }
-  
-  if (s=="POSE") {
-    rootDaysfull<-glm(days_til_germ~Day_Scale_7+Night_Scale_7+Treatment+
-                        Treatment:Day_Scale_7,
-                      family=poisson(link = "log"),data=temp_agg2_germ)
-    print(summary(rootDaysfull))
-  }
-  
   if (s=="ARTR") {
     rootDaysfull<-glm(days_til_germ~Day_Scale_7+Night_Scale_7+Treatment+
-                        Treatment:Day_Scale_7,
+                        Day_Scale_7:Treatment,
                       family=poisson(link = "log"),data=temp_agg2_germ)
     print(summary(rootDaysfull))
-    
   }
-  
   rootDaysfit.full.list[[s]] <- rootDaysfull
   
 }
-####
 
 ## emergence glm
 
-#parameters from dredge
+#parameters from step
 
 shootDaysfit.full.list <- list()
 
@@ -241,21 +204,9 @@ for (s in species){
   emerg_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_emerg") #select the columns I want for the germ model
   temp_agg2_emerg<-temp_agg2[,emerg_cols] # make a new dataframe with just those values
   
-  shootDaysfull<-glm(days_til_emerg~Day_Scale_7+Night_Scale_7,
+  shootDaysfull<-glm(days_til_emerg~Treatment+Day_Scale_7+Night_Scale_7,
                     family=poisson(link = "log"),data=temp_agg2_emerg)
   print(summary(shootDaysfull))
-  
-  if (s=="ACMI") {
-    shootDaysfull<-glm(days_til_emerg~Day_Scale_7+Night_Scale_7+Treatment,
-                      family=poisson(link = "log"),data=temp_agg2_emerg)
-    print(summary(shootDaysfull))
-  }
-  
-  if (s=="POSE") {
-    shootDaysfull<-glm(days_til_emerg~Day_Scale_7+Night_Scale_7+Treatment,
-                      family=poisson(link = "log"),data=temp_agg2_emerg)
-    print(summary(shootDaysfull))
-  }
   
   rootDaysfit.full.list[[s]] <- rootDaysfull
   
@@ -272,37 +223,31 @@ for (s in species) {
   print(s)
   temp_agg2 <- short.data.list2[[s]] # pull out the data
   temp_agg3<-temp_agg2[-which(temp_agg2$germ_rate==0),]
-  germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","germ_rate") #select the columns I want for the germ model
-  temp_agg3_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
+  grate_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","germ_rate") #select the columns I want for the germ model
+  temp_agg3_germ<-temp_agg2[,grate_cols] # make a new dataframe with just those values
   
-  rootratefit.full<-glm(germ_rate~Day_Scale_7+Night_Scale_7,
-                            family=Gamma(link="log"),data=temp_agg3_germ)
+  rootratefit.full<-glm(germ_rate~Day_Scale_7+Night_Scale_7+Treatment,
+                            family=Gamma(link="log"),data=temp_agg3_grate)
   print(summary(rootratefit.full))
   
   if (s=="POSE"){
     rootratefit.full<-glm(germ_rate~Day_Scale_7+Night_Scale_7+Treatment+
                                 Day_Scale_7:Treatment,
-                              family=Gamma(link="log"),data=temp_agg3_germ)
-    print(summary(rootratefit.full)) 
-  }
-  
-  if (s=="ARTR"){
-    rootratefit.full<-glm(germ_rate~Day_Scale_7+Night_Scale_7+Treatment,
-                              family=Gamma(link="log"),data=temp_agg3_germ)
+                              family=Gamma(link="log"),data=temp_agg3_grate)
     print(summary(rootratefit.full)) 
   }
   
   if (s=="ACMI"){
-    rootratefit.full<-glm(germ_rate~Day_Scale_7+Night_Scale_7+
+    rootratefit.full<-glm(germ_rate~Day_Scale_7+Night_Scale_7+Treatment
                                 Day_Scale_7:Night_Scale_7,
-                              family=Gamma(link="log"),data=temp_agg3_germ)
+                              family=Gamma(link="log"),data=temp_agg3_grate)
     print(summary(rootratefit.full)) 
   }
   
   if (s=="ELEL"){
     rootratefit.full<-glm(germ_rate~Day_Scale_7+Night_Scale_7+Treatment+
                                 Day_Scale_7:Treatment+Day_Scale_7:Night_Scale_7,
-                              family=Gamma(link="log"),data=temp_agg3_germ)
+                              family=Gamma(link="log"),data=temp_agg3_grate)
     print(summary(rootratefit.full)) 
   }
   
@@ -320,29 +265,23 @@ for (s in species) {
   temp_agg2 <- short.data.list2[[s]] # pull out the data
   temp_agg3<-temp_agg2[-which(temp_agg2$emerg_rate==0),]
   emerg_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","emerg_rate") #select the columns I want for the germ model
-  temp_agg3_emerg<-temp_agg2[,emerg_cols] # make a new dataframe with just those values
+  temp_agg3_erate<-temp_agg2[,emerg_cols] # make a new dataframe with just those values
   
-  shootratefit.full<-glm(emerg_rate~Day_Scale_7+Night_Scale_7,
-                        family=Gamma(link="log"),data=temp_agg3_emerg)
+  shootratefit.full<-glm(emerg_rate~Day_Scale_7+Night_Scale_7+Treatment,
+                        family=Gamma(link="log"),data=temp_agg3_erate)
   print(summary(shootratefit.full))
   
   if (s=="POSE"){
     shootratefit.full<-glm(emerg_rate~Day_Scale_7+Night_Scale_7+Treatment+
-                            Day_Scale_7:Treatment+Night_Scale_7:Treatment,
-                          family=Gamma(link="log"),data=temp_agg3_emerg)
-    print(summary(shootratefit.full)) 
-  }
-  
-  if (s=="ARTR"){
-    shootratefit.full<-glm(emerg_rate~Day_Scale_7+Night_Scale_7+Treatment,
-                          family=Gamma(link="log"),data=temp_agg3_emerg)
+                            Night_Scale_7:Treatment,
+                          family=Gamma(link="log"),data=temp_agg3_erate)
     print(summary(shootratefit.full)) 
   }
   
   if (s=="ELEL"){
     shootratefit.full<-glm(emerg_rate~Day_Scale_7+Night_Scale_7+Treatment+
                             Day_Scale_7:Treatment+Day_Scale_7:Night_Scale_7,
-                          family=Gamma(link="log"),data=temp_agg3_emerg)
+                          family=Gamma(link="log"),data=temp_agg3_erate)
     print(summary(shootratefit.full)) 
   }
   

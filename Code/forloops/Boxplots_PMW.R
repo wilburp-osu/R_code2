@@ -215,7 +215,7 @@ for (s in species){
     scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
     scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
   
-  print(night.t.boxplots)
+  print(night.t.emerg.boxplots)
   
 }  
 
@@ -344,6 +344,11 @@ for (s in species){
   print(day.t.grate.boxplots)
   
 }  
+
+### PMW next steps
+## IS there any way to make simple graphs of mixed effects
+## there are not that many where those are significant
+## but also treatment not significant for everything
 
 #emerg
 

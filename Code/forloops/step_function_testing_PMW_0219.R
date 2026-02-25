@@ -314,3 +314,100 @@ for (s in species){
   #models.step$anova
   
 }
+
+##Emerg
+for (s in species){
+  
+  print(s)
+  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  emerg_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_emerg") #select the columns I want for the germ model
+  temp_agg2_emerg<-temp_agg2[,emerg_cols] # make a new dataframe with just those values
+  
+  
+  
+  #fit the null model
+  null.model<-glm(days_til_emerg~. ,
+                  family=poisson(link = "log"),data=temp_agg2_emerg)
+  
+  #fit the global models
+  global.model<-glm(days_til_emerg~Day_Scale_7+Night_Scale_7+
+                      Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                      Treatment+Day_Scale_7:Night_Scale_7+
+                      Day_Scale_7:Night_Scale_7:Treatment,
+                    family=poisson(link = "log"),data=temp_agg2_emerg)
+  
+  #run the step function in both directions bounded by the null and global model
+  models.step<- step(null.model,direction="both",
+                     scope = list(lower=null.model, upper=global.model),
+                     k = log(784)) ##784 is the number of observations
+  ## I think this makes what is labelled as AIC turn to BIC
+  
+  print(summary(models.step))
+  #models.step$anova
+  
+}
+
+##Germ rate
+for (s in species){
+  
+  print(s)
+  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  grate_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","germ_rate") #select the columns I want for the germ model
+  temp_agg2_grate<-temp_agg2[,grate_cols] # make a new dataframe with just those values
+  
+  
+  
+  #fit the null model
+  null.model<-glm(germ_rate~. ,
+                  family=Gamma(link = "log"),data=temp_agg2_grate)
+  
+  #fit the global models
+  global.model<-glm(germ_rate~Day_Scale_7+Night_Scale_7+
+                      Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                      Treatment+Day_Scale_7:Night_Scale_7+
+                      Day_Scale_7:Night_Scale_7:Treatment,
+                    family=Gamma(link = "log"),data=temp_agg2_grate)
+  
+  #run the step function in both directions bounded by the null and global model
+  models.step<- step(null.model,direction="both",
+                     scope = list(lower=null.model, upper=global.model),
+                     k = log(784)) ##784 is the number of observations
+  ## I think this makes what is labelled as AIC turn to BIC
+  
+  print(summary(models.step))
+  #models.step$anova
+  
+}
+
+##Emerg rate
+for (s in species){
+  
+  print(s)
+  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  erate_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","emerg_rate") #select the columns I want for the germ model
+  temp_agg2_erate<-temp_agg2[,erate_cols] # make a new dataframe with just those values
+  
+  
+  
+  #fit the null model
+  null.model<-glm(emerg_rate~. ,
+                  family=Gamma(link = "log"),data=temp_agg2_erate)
+  
+  #fit the global models
+  global.model<-glm(emerg_rate~Day_Scale_7+Night_Scale_7+
+                      Day_Scale_7:Treatment+Night_Scale_7:Treatment+
+                      Treatment+Day_Scale_7:Night_Scale_7+
+                      Day_Scale_7:Night_Scale_7:Treatment,
+                    family=Gamma(link = "log"),data=temp_agg2_erate)
+  
+  #run the step function in both directions bounded by the null and global model
+  models.step<- step(null.model,direction="both",
+                     scope = list(lower=null.model, upper=global.model),
+                     k = log(784)) ##784 is the number of observations
+  ## I think this makes what is labelled as AIC turn to BIC
+  
+  print(summary(models.step))
+  #models.step$anova
+  
+}
+

@@ -218,9 +218,12 @@ ggplot(output.all.rootdays[-which(output.all.rootdays$coefficients=="(Intercept)
   geom_tile(data =rootDays_sig[-which(rootDays_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
             col="black",size=2)+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+  scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Days until Germination")+
+                       name="Effect")+
+  ylab("Variables & Interactions")+
+  xlab("Species")+
+  ggtitle("Temperature & Treatments Interactions with Germination")+
   theme_minimal()
 
 ## emergence glm
@@ -267,9 +270,12 @@ ggplot(output.all.shootdays[-which(output.all.shootdays$coefficients=="(Intercep
   geom_tile(data =shootDays_sig[-which(shootDays_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
             col="black",size=2)+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+  scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Days until Emergence")+
+                       name="Effect")+
+  ylab("Variables & Interactions")+
+  xlab("Species")+
+  ggtitle("Temperature & Treatments Interactions with Emergence")+
   theme_minimal()
 
 
@@ -340,7 +346,10 @@ ggplot(output.all.rootrate[-which(output.all.rootrate$coefficients=="(Intercept)
             col="black",size=2)+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Germination Rate")+
+                       name="Effect")+
+  ylab("Variables & Interactions")+
+  xlab("Species")+
+  ggtitle("Temperature & Treatments Interactions with Germination Rate")+
   theme_minimal()
 
 
@@ -404,7 +413,10 @@ ggplot(output.all.shootrate[-which(output.all.shootrate$coefficients=="(Intercep
             col="black",size=2)+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Emergence Rate")+
+                       name="Effect")+
+  ylab("Variables & Interactions")+
+  xlab("Species")+
+  ggtitle("Temperature & Treatments Interactions with Germination Rate")+
   theme_minimal()
 
 

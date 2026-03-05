@@ -13,6 +13,8 @@ library(Cairo)
 library(dplyr)
 library(MuMIn)
 library(ggplot2)
+library(patchwork)
+
 
 ######################################
 #create open list
@@ -21,7 +23,7 @@ data.list<-list()
 species<-c("POSE","ARTR","ACMI","ELEL")
 
 ##set wd
-setwd("C:/Users/18034/Dropbox/PC/Desktop/R_code/R_code2")
+#setwd("C:/Users/18034/Dropbox/PC/Desktop/R_code/R_code2")
 
 # Read in data ####
 for (s in species ) {
@@ -173,6 +175,8 @@ for (s in species){
 ##Night
 #Germ
 
+plots <- list()
+
 for (s in species){
   
   temp_agg3 <- short.data.list2[[s]] 
@@ -188,14 +192,20 @@ for (s in species){
           x = "Night Temperature",
           y = "Days Until Germination")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(night.t.germ.boxplots)
   
+  plots[[s]] <- night.t.germ.boxplots
 }  
 
+(plots[["POSE"]] | plots[["ACMI"]]) /
+  (plots[["ARTR"]] | plots[["ELEL"]])
+
 #Emerg
+
+plots1 <- list()
 
 for (s in species){
   
@@ -212,15 +222,22 @@ for (s in species){
           x = "Night Temperature",
           y = "Days Until Emergence")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(night.t.emerg.boxplots)
   
+  plots1[[s]] <- night.t.emerg.boxplots
+  
 }  
+
+(plots1[["POSE"]] | plots1[["ACMI"]]) /
+  (plots1[["ARTR"]] | plots1[["ELEL"]])
 
 ##DAY
 # Germ
+
+plots2 <- list()
 
 for (s in species){
   
@@ -237,14 +254,21 @@ for (s in species){
           x = "Day Temperature",
           y = "Days Until Germination")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(day.t.germ.boxplots)
   
+  plots2[[s]] <- day.t.germ.boxplots
+  
 }
 
+(plots2[["POSE"]] | plots2[["ACMI"]]) /
+  (plots2[["ARTR"]] | plots2[["ELEL"]])
+
 # Emerg
+
+plots3 <-list()
 
 for (s in species){
   
@@ -261,17 +285,24 @@ for (s in species){
           x = "Day Temperature",
           y = "Days Until Emergence")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(day.t.emerg.boxplots)
   
+  plots3[[s]] <- day.t.emerg.boxplots
+  
 }
+
+(plots3[["POSE"]] | plots3[["ACMI"]]) /
+  (plots3[["ARTR"]] | plots3[["ELEL"]])
 
 ### Rates
 #Night Scale
 
 #germ
+
+plots4 <- list()
 
 for (s in species){
   
@@ -288,14 +319,21 @@ for (s in species){
           x = "Night Temperature",
           y = "Germination Rate")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(night.t.grate.boxplots)
   
+  plots4[[s]] <- night.t.grate.boxplots
+  
 }  
 
+(plots4[["POSE"]] | plots4[["ACMI"]]) /
+  (plots4[["ARTR"]] | plots4[["ELEL"]])
+
 #emerg
+
+plots5 <- list()
 
 for (s in species){
   
@@ -312,16 +350,23 @@ for (s in species){
           x = "Night Temperature",
           y = "Emergence Rate")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(night.t.erate.boxplots)
   
+  plots5[[s]] <- night.t.erate.boxplots
+  
 }  
+
+(plots5[["POSE"]] | plots5[["ACMI"]]) /
+  (plots5[["ARTR"]] | plots5[["ELEL"]])
 
 #Day Scale
 
 #germ
+
+plots6 <- list()
 
 for (s in species){
   
@@ -338,19 +383,21 @@ for (s in species){
           x = "Day Temperature",
           y = "Germination Rate")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(day.t.grate.boxplots)
   
-}  
+  plots6[[s]] <- day.t.grate.boxplots
+  
+} 
 
-### PMW next steps
-## IS there any way to make simple graphs of mixed effects
-## there are not that many where those are significant
-## but also treatment not significant for everything
+(plots6[["POSE"]] | plots6[["ACMI"]]) /
+  (plots6[["ARTR"]] | plots6[["ELEL"]])
 
 #emerg
+
+plots7 <- list()
 
 for (s in species){
   
@@ -367,14 +414,20 @@ for (s in species){
           x = "Day Temperature",
           y = "Emergence Rate")+
     theme_minimal(base_size = 15)+
-    scale_color_manual(values=c("grey60","green3","orchid3","dodgerblue3"))+
-    scale_fill_manual(values=c("grey80","green","orchid1","skyblue"))
+    scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
+    scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))
   
   print(day.t.erate.boxplots)
   
-}  
+  plots7[[s]] <- day.t.erate.boxplots
+  
+}
 
+(plots7[["POSE"]] | plots7[["ACMI"]]) /
+  (plots7[["ARTR"]] | plots7[["ELEL"]])
 
+################################################################################
+################################################################################
 ## Leaving these below to have a record ##
 ## ggplot
 

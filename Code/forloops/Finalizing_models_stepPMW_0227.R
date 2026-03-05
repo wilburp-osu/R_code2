@@ -208,7 +208,7 @@ output.all.rootdays <- do.call(rbind, rootDays.output)
 names(output.all.rootdays)
 
 output.all.rootdays$sigvar <-
-  ifelse(output.all.rootdays$Pr...z.. <= 0.001, 1, 0)
+  ifelse(output.all.rootdays$Pr...z.. < 0.05, 1, 0)
 
 rootDays_sig<-output.all.rootdays[which(output.all.rootdays$sigvar==1),]         
 
@@ -218,7 +218,7 @@ ggplot(output.all.rootdays[-which(output.all.rootdays$coefficients=="(Intercept)
   geom_tile(data =rootDays_sig[-which(rootDays_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
             col="black",size=2)+
-  scale_fill_gradient2(low = "red", high = "blue", mid = "white",
+  scale_fill_gradient2(low = "red", high = "blue", mid = 0,
                        midpoint = 0, space = "Lab",
                        name="Effect")+
   ylab("Variables & Interactions")+
@@ -259,7 +259,7 @@ for (s in species){
 output.all.shootdays <- do.call(rbind, shootDays.output)
 
 output.all.shootdays$sigvar <-
-  ifelse(output.all.shootdays$Pr...z.. <= 0.001, 1, 0)
+  ifelse(output.all.shootdays$Pr...z.. < 0.05, 1, 0)
 
 
 shootDays_sig<-output.all.shootdays[which(output.all.shootdays$sigvar==1),]         
@@ -275,9 +275,8 @@ ggplot(output.all.shootdays[-which(output.all.shootdays$coefficients=="(Intercep
                        name="Effect")+
   ylab("Variables & Interactions")+
   xlab("Species")+
-  ggtitle("Temperature & Treatments Interactions with Emergence")+
-  theme_minimal()
-
+  ggtitle("Temperature & Treatments Interactions with Emergence") #+
+  #theme_minimal()
 
 ##Rates
 ##germ
@@ -334,9 +333,23 @@ for (s in species) {
 output.all.rootrate <- do.call(rbind, root.rate.output)
 
 output.all.rootrate$sigvar <-
-  ifelse(output.all.rootrate$Pr...t.. <= 0.001, 1, 0)
+  ifelse(output.all.rootrate$Pr...t.. < 0.05, 1, 0)
 
 rootrate_sig<-output.all.rootrate[which(output.all.rootrate$sigvar==1),]         
+
+ggplot(output.all.rootrate[-which(output.all.rootrate$coefficients=="(Intercept)"),],
+       aes(x=Species,y=coefficients))+
+  geom_raster(aes(fill=Estimate))+
+  geom_tile(data =rootrate_sig[-which(rootrate_sig$coefficients=="(Intercept)"),], 
+            aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
+            col="black",size=2)+
+  scale_fill_gradient2(low = "blue", high = "red", mid = "ivory1",
+                       midpoint = 0, space = "Lab",
+                       name="Effect")+
+  ylab("Variables & Interactions")+
+  xlab("Species")+
+  ggtitle("Temperature & Treatments Interactions with Germination Rate")+
+  theme_minimal()
 
 ggplot(output.all.rootrate[-which(output.all.rootrate$coefficients=="(Intercept)"),],
        aes(x=Species,y=coefficients))+
@@ -349,9 +362,8 @@ ggplot(output.all.rootrate[-which(output.all.rootrate$coefficients=="(Intercept)
                        name="Effect")+
   ylab("Variables & Interactions")+
   xlab("Species")+
-  ggtitle("Temperature & Treatments Interactions with Germination Rate")+
-  theme_minimal()
-
+  ggtitle("Temperature & Treatments Interactions with Germination Rate")#+
+  #theme_minimal()
 
 ##emerg
 
@@ -401,7 +413,7 @@ for (s in species) {
 output.all.shootrate <- do.call(rbind, shoot.rate.output)
 
 output.all.shootrate$sigvar <-
-  ifelse(output.all.shootrate$Pr...t.. <= 0.001, 1, 0)
+  ifelse(output.all.shootrate$Pr...t.. < 0.05, 1, 0)
 
 shootrate_sig<-output.all.shootrate[which(output.all.shootrate$sigvar==1),]         
 
@@ -411,7 +423,7 @@ ggplot(output.all.shootrate[-which(output.all.shootrate$coefficients=="(Intercep
   geom_tile(data =shootrate_sig[-which(shootrate_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
             col="black",size=2)+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+  scale_fill_gradient2(low = "blue", high = "red", mid = "grey96",
                        midpoint = 0, space = "Lab",
                        name="Effect")+
   ylab("Variables & Interactions")+

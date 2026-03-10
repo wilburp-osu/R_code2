@@ -79,8 +79,6 @@ for (s in species){
 }
 
 ### aggregate data for each cuvette for each day ######
-#view(clean.data.list)
-#str(clean.data.list)
 
 clean.data.list.short<-list()
 
@@ -90,10 +88,6 @@ for (s in species){
   
   # add unqiue ID into the clean data dataframes. 
   temp2$unique_ID<-paste0(temp2$Group,"_",temp2$Treatment,"_",temp2$Cell)
-  
-  # remove all columns not needed
-  # what columns we need are... c("Group","days_til_emerg",
-  #         "days_til_germ","Treatment","Day_Scale_7","Night_Scale_7","unique_ID)
   
   short.temp <- temp2[, c("Group",
                           "days_til_emerg",
@@ -105,9 +99,6 @@ for (s in species){
                           "unique_ID",
                           "germ_rate",
                           "emerg_rate")]
-  
-  #instead of unique() which would create a seed for each day
-  
   
   indiv <- aggregate(cbind(days_til_emerg, 
                            days_til_germ,
@@ -152,8 +143,6 @@ for (s in species){
 
 ######################################
 ## germination glm
-#should i be using (1|Group)?
-
 #parameters from dredge
 
 rootDaysfit.full.list <- list()

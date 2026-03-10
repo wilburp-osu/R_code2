@@ -152,8 +152,6 @@ for (s in species){
 
 ######################################
 ## germination glm
-#should i be using (1|Group)?
-
 #parameters from step
 
 rootDaysfit.full.list <- list()
@@ -309,33 +307,33 @@ for (s in species){
 
 ### raster figs ####
 ## is this right?
-for (s in species){
-  print(s)
-  pnew.data.root <- predict.list.root[[s]]
-  temp_agg2 <- short.data.list2[[s]]
-  
-  #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
-  mid.pointss<-mean(temp_agg2$days_til_germ[which(temp_agg2$Treatment=="C")],na.rm=T)
-  
-  print(mid.pointss)
-  
-  germplots <- ggplot(pnew.data.root,aes(x=Day_Scale_7,y=Night_Scale_7))+
-    geom_raster(aes(fill=Prediction_back))+
-    facet_grid(.~Treatment)+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                         midpoint = mid.pointss, space = "Lab",
-                         name="Days until Germination") +
-    theme_minimal()+
-    ylab("Night Temperature (C)")+
-    xlab("Day Temperature (C)")+
-    theme(legend.position = "bottom")+
-    labs(title = paste0(s))
-  
-  #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
-  #res = 300)
-  print(germplots)
-  # dev.off()
-}   
+# for (s in species){
+#   print(s)
+#   pnew.data.root <- predict.list.root[[s]]
+#   temp_agg2 <- short.data.list2[[s]]
+#   
+#   #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
+#   mid.pointss<-mean(temp_agg2$days_til_germ[which(temp_agg2$Treatment=="C")],na.rm=T)
+#   
+#   print(mid.pointss)
+#   
+#   germplots <- ggplot(pnew.data.root,aes(x=Day_Scale_7,y=Night_Scale_7))+
+#     geom_raster(aes(fill=Prediction_back))+
+#     facet_grid(.~Treatment)+
+#     scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+#                          midpoint = mid.pointss, space = "Lab",
+#                          name="Days until Germination") +
+#     theme_minimal()+
+#     ylab("Night Temperature (C)")+
+#     xlab("Day Temperature (C)")+
+#     theme(legend.position = "bottom")+
+#     labs(title = paste0(s))
+#   
+#   #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
+#   #res = 300)
+#   print(germplots)
+#   # dev.off()
+# }   
 
 
 ##days til emerg
@@ -358,33 +356,33 @@ for (s in species){
 
 ### raster figs ####
 ## is this right? look way different than original
-for (s in species){
-  print(s)
-  pnew.data.shoot <- predict.list.shoot[[s]]
-  temp_agg2 <- short.data.list2[[s]]
-  
-  #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
-  mid.pointss<-mean(temp_agg2$days_til_emerg[which(temp_agg2$Treatment=="C")],na.rm=T)
-  
-  print(mid.pointss)
-  
-  emergplots <- ggplot(pnew.data,aes(x=Day_Scale_7,y=Night_Scale_7))+
-    geom_raster(aes(fill=Prediction_back))+
-    facet_grid(.~Treatment)+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                         midpoint = mid.pointss, space = "Lab",
-                         name="Days until Emergence") +
-    theme_minimal()+
-    ylab("Night Temperature (C)")+
-    xlab("Day Temperature (C)")+
-    theme(legend.position = "bottom")+
-    labs(title = paste0(s))
-  
-  #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
-           #res = 300)
-  print(emergplots)
- # dev.off()
-}   
+# for (s in species){
+#   print(s)
+#   pnew.data.shoot <- predict.list.shoot[[s]]
+#   temp_agg2 <- short.data.list2[[s]]
+#   
+#   #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
+#   mid.pointss<-mean(temp_agg2$days_til_emerg[which(temp_agg2$Treatment=="C")],na.rm=T)
+#   
+#   print(mid.pointss)
+#   
+#   emergplots <- ggplot(pnew.data,aes(x=Day_Scale_7,y=Night_Scale_7))+
+#     geom_raster(aes(fill=Prediction_back))+
+#     facet_grid(.~Treatment)+
+#     scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+#                          midpoint = mid.pointss, space = "Lab",
+#                          name="Days until Emergence") +
+#     theme_minimal()+
+#     ylab("Night Temperature (C)")+
+#     xlab("Day Temperature (C)")+
+#     theme(legend.position = "bottom")+
+#     labs(title = paste0(s))
+#   
+#   #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
+#            #res = 300)
+#   print(emergplots)
+#  # dev.off()
+# }   
 
 ##########
 
@@ -405,38 +403,39 @@ for (s in species){
 }
 
 ### raster figs ####
-for (s in species){
-  print(s)
-  pnew.data.grate <- predict.list.grate[[s]]
-  temp_agg2 <- short.data.list2[[s]]
-  
-  #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
-  mid.pointss<-mean(temp_agg2$germ_rate[which(temp_agg2$Treatment=="C")],na.rm=T)
-  
-  print(mid.pointss)
-  
-  plots <- ggplot(pnew.data.grate,aes(x=Day_Scale_7,y=Night_Scale_7))+
-    geom_raster(aes(fill=Prediction_back))+
-    facet_grid(.~Treatment)+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                         midpoint = mid.pointss, space = "Lab",
-                         name="Root growth rate (final root length/days of growth)") +
-    theme_minimal()+
-    ylab("Night Temperature (C)")+
-    xlab("Day Temperature (C)")+
-    theme(legend.position = "bottom")+
-    labs(title = paste0(s))
-  
-  #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
-           #res = 300)
-  print(plots)
-  #dev.off()
-}   
+# for (s in species){
+#   print(s)
+#   pnew.data.grate <- predict.list.grate[[s]]
+#   temp_agg2 <- short.data.list2[[s]]
+#   
+#   #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
+#   mid.pointss<-mean(temp_agg2$germ_rate[which(temp_agg2$Treatment=="C")],na.rm=T)
+#   
+#   print(mid.pointss)
+#   
+#   plots <- ggplot(pnew.data.grate,aes(x=Day_Scale_7,y=Night_Scale_7))+
+#     geom_raster(aes(fill=Prediction_back))+
+#     facet_grid(.~Treatment)+
+#     scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+#                          midpoint = mid.pointss, space = "Lab",
+#                          name="Root growth rate (final root length/days of growth)") +
+#     theme_minimal()+
+#     ylab("Night Temperature (C)")+
+#     xlab("Day Temperature (C)")+
+#     theme(legend.position = "bottom")+
+#     labs(title = paste0(s))
+#   
+#   #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
+#            #res = 300)
+#   print(plots)
+#   #dev.off()
+# }   
 
 ###
-
-predict.list.grate <- list()
 ##Rates
+##Germ
+predict.list.grate <- list()
+
 for (s in species){
   rootratefit <- root.rate.full.list[[s]]
   #temp_agg<-agg.list[[s]]
@@ -452,33 +451,33 @@ for (s in species){
 }
 
 ### raster figs ####
-for (s in species){
-  print(s)
-  pnew.data.grate <- predict.list.grate[[s]]
-  temp_agg2 <- short.data.list2[[s]]
-  
-  #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
-  mid.pointss<-mean(temp_agg2$germ_rate[which(temp_agg2$Treatment=="C")],na.rm=T)
-  
-  print(mid.pointss)
-  
-  plots <- ggplot(pnew.data.grate,aes(x=Day_Scale_7,y=Night_Scale_7))+
-    geom_raster(aes(fill=Prediction_back))+
-    facet_grid(.~Treatment)+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                         midpoint = mid.pointss, space = "Lab",
-                         name="Root growth rate (final root length/days of growth)") +
-    theme_minimal()+
-    ylab("Night Temperature (C)")+
-    xlab("Day Temperature (C)")+
-    theme(legend.position = "bottom")+
-    labs(title = paste0(s))
-  
-  #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
-  #res = 300)
-  print(plots)
-  #dev.off()
-}   
+# for (s in species){
+#   print(s)
+#   pnew.data.grate <- predict.list.grate[[s]]
+#   temp_agg2 <- short.data.list2[[s]]
+#   
+#   #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
+#   mid.pointss<-mean(temp_agg2$germ_rate[which(temp_agg2$Treatment=="C")],na.rm=T)
+#   
+#   print(mid.pointss)
+#   
+#   plots <- ggplot(pnew.data.grate,aes(x=Day_Scale_7,y=Night_Scale_7))+
+#     geom_raster(aes(fill=Prediction_back))+
+#     facet_grid(.~Treatment)+
+#     scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+#                          midpoint = mid.pointss, space = "Lab",
+#                          name="Root growth rate (final root length/days of growth)") +
+#     theme_minimal()+
+#     ylab("Night Temperature (C)")+
+#     xlab("Day Temperature (C)")+
+#     theme(legend.position = "bottom")+
+#     labs(title = paste0(s))
+#   
+#   #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
+#   #res = 300)
+#   print(plots)
+#   #dev.off()
+# }   
 
 ###
 #Emerg
@@ -499,32 +498,30 @@ for (s in species){
 }
 
 ### raster figs ####
-for (s in species){
-  print(s)
-  pnew.data.erate <- predict.list.erate[[s]]
-  temp_agg2 <- short.data.list2[[s]]
-  
-  #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
-  mid.pointss<-mean(temp_agg2$emerg_rate[which(temp_agg2$Treatment=="C")],na.rm=T)
-  
-  print(mid.pointss)
-  
-  plots <- ggplot(pnew.data.erate,aes(x=Day_Scale_7,y=Night_Scale_7))+
-    geom_raster(aes(fill=Prediction_back))+
-    facet_grid(.~Treatment)+
-    scale_fill_gradient2(low = "blue", high = "red", mid = "white",
-                         midpoint = mid.pointss, space = "Lab",
-                         name="Shoot growth rate (final shoot length/days of growth)") +
-    theme_minimal()+
-    ylab("Night Temperature (C)")+
-    xlab("Day Temperature (C)")+
-    theme(legend.position = "bottom")+
-    labs(title = paste0(s))
-  
-  #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
-  #res = 300)
-  print(plots)
-  #dev.off()
-}   
-
-
+# for (s in species){
+#   print(s)
+#   pnew.data.erate <- predict.list.erate[[s]]
+#   temp_agg2 <- short.data.list2[[s]]
+#   
+#   #temp_agg2<-temp_agg[-which(temp_agg$Avg_Root_rate==0),]
+#   mid.pointss<-mean(temp_agg2$emerg_rate[which(temp_agg2$Treatment=="C")],na.rm=T)
+#   
+#   print(mid.pointss)
+#   
+#   plots <- ggplot(pnew.data.erate,aes(x=Day_Scale_7,y=Night_Scale_7))+
+#     geom_raster(aes(fill=Prediction_back))+
+#     facet_grid(.~Treatment)+
+#     scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+#                          midpoint = mid.pointss, space = "Lab",
+#                          name="Shoot growth rate (final shoot length/days of growth)") +
+#     theme_minimal()+
+#     ylab("Night Temperature (C)")+
+#     xlab("Day Temperature (C)")+
+#     theme(legend.position = "bottom")+
+#     labs(title = paste0(s))
+#   
+#   #CairoPNG(file.path(paste0("Figures/",s,"_Root_growth_rate.png")), width = 12, height = 7, units = "in",
+#   #res = 300)
+#   print(plots)
+#   #dev.off()
+# }   

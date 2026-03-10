@@ -164,8 +164,6 @@ for (s in species){
   germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_germ") #select the columns I want for the germ model
   temp_agg2_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
 
-  
-    
   #fit the null model
   null.model<-glm(days_til_germ~. ,
                   family=poisson(link = "log"),data=temp_agg2_germ)

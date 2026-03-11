@@ -17,19 +17,33 @@ library(tidyr)
 #could not figure out how to do the subtraction in r, so just did it in excel
 #read in data
  
-raw.readbiomass<-read.csv("Data/POSE_Data/SA_POSE_Biomass_mathinsheet.csv")
+raw.readbiomass<-read.csv("Data/POSE_Data/SA_POSE_Biomass_08_18_25.csv")
+
+raw.readbiomass2<- raw.readbiomass[-c(69:84),]
 
 ### Shoot Mass
 
-shootmass_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","Corrected_shootweight") #select the columns I want for the germ model
-shootmass<-raw.readbiomass[,shootmass_cols] # make a new dataframe with just those values
+for (i in 1:max(raw.readbiomass2$Group, na.rm = TRUE)){
+  for (t in unique(raw.readbiomass2$Treatment)) {
+    
+      raw.readbiomass2$mass_RT_diff[raw.readbiomass2$Group==i & raw.readbiomass2$Treatment==t]<- 
+        raw.readbiomass2$AVG_RT_BMSS_g[raw.readbiomass2$Group==i & raw.readbiomass2$Treatment==t] - raw.readbiomass2$AVG_RT_BMSS_g[raw.readbiomass2$Group==i & raw.readbiomass2$Treatment=="C"]
+      
+      raw.readbiomass2$mass_SH_diff[raw.readbiomass2$Group==i & raw.readbiomass2$Treatment==t]<- 
+        raw.readbiomass2$AVG_SH_BMSS_g[raw.readbiomass2$Group==i & raw.readbiomass2$Treatment==t] - raw.readbiomass2$AVG_SH_BMSS_g[raw.readbiomass2$Group==i & raw.readbiomass2$Treatment=="C"]
+       
+  }
+}
 
-null.model<-glm(Corrected_shootweight~. ,
+shootmass_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","mass_SH_diff") #select the columns I want for the germ model
+shootmass<-raw.readbiomass[,"mass_SH_diff"] # make a new dataframe with just those values
+
+null.model<-glm(mass_SH_diff~. ,
                 family=gaussian(link = "identity"), ##is identity right?
                 data=shootmass)
 
 #fit the global models
-global.model <- glm(Corrected_shootweight~Treatment+Night_Scale_7+Day_Scale_7+ 
+global.model <- glm(mass_SH_diff~Treatment+Night_Scale_7+Day_Scale_7+ 
                    Treatment:Night_Scale_7+Treatment:Day_Scale_7+Night_Scale_7:Day_Scale_7,
                    gaussian(link = "identity"),
     data=shootmass)
@@ -39,7 +53,7 @@ models.step<- step(null.model,direction="both",scope = list(lower=null.model, up
 
 summary(models.step)
 
-shootWeightfull<-glm(Corrected_shootweight~Treatment+Day_Scale_7+Night_Scale_7+
+shootWeightfull<-glm(mass_SH_diff~Treatment+Day_Scale_7+Night_Scale_7+
                        Day_Scale_7:Night_Scale_7,
                   family=gaussian(link = "identity"),data=shootmass)
 
@@ -47,16 +61,16 @@ summary(shootWeightfull)
 
 ## Root Mass
 
-rootmass_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","Corrected_rootweight") #select the columns I want for the germ model
-rootmass<-raw.readbiomass[,rootmass_cols] # make a new dataframe with just those values
+rootmass_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","mass_RT_diff") #select the columns I want for the germ model
+rootmass<-raw.readbiomass[,mass_RT_diff] # make a new dataframe with just those values
 
 #fit the null model
-null.model<-glm(Corrected_rootweight~. ,
+null.model<-glm(mass_RT_diff~. ,
                 family=gaussian(link = "identity"), ##is identity right?
                 data=rootmass)
 
 #fit the global models
-global.model <- glm(Corrected_rootweight~Treatment+Night_Scale_7+Day_Scale_7+ 
+global.model <- glm(mass_RT_diff~Treatment+Night_Scale_7+Day_Scale_7+ 
                       Treatment:Night_Scale_7+Treatment:Day_Scale_7+Night_Scale_7:Day_Scale_7,
                     gaussian(link = "identity"),
                     data=rootmass)

@@ -15,6 +15,7 @@ library(tidyr)
 ######################################
 #create open list
 data.list<-list()
+
 #create species names
 species<-c("POSE","ARTR","ACMI","ELEL")
 
@@ -80,9 +81,6 @@ for (s in species){
 }
 
 ### aggregate data for each cuvette for each day ######
-#view(clean.data.list)
-#str(clean.data.list)
-
 clean.data.list.short<-list()
 
 for (s in species){
@@ -148,9 +146,8 @@ for (s in species){
   }
   
   short.data.list2[[s]]<-temp3
+}  
   
-}
-
 ######################################
 ## germination glm
 #should i be using (1|Group)?
@@ -166,6 +163,8 @@ for (s in species){
   germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_germ") #select the columns I want for the germ model
   temp_agg2_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
   
+  ##if ELEL
+  # Create glm of days til germination
   rootDaysfull<-glm(days_til_germ~Treatment+Day_Scale_7+Night_Scale_7,
                     family=poisson(link = "log"),data=temp_agg2_germ)
   print(summary(rootDaysfull))
@@ -207,6 +206,26 @@ output.all.rootdays <- do.call(rbind, rootDays.output)
 
 names(output.all.rootdays)
 
+
+str(output.all.rootdays$coefficients)
+unique(output.all.rootdays$coefficients)
+  
+output.all.rootdays$coefficients<-factor(output.all.rootdays$coefficients,
+                                         levels = c("Day_Scale_7:TreatmentW",
+                                                    "Day_Scale_7:TreatmentL", 
+                                                    "Day_Scale_7:TreatmentH",
+                                                    "Day_Scale_7:Night_Scale_7",
+                                                    "(Intercept)", "TreatmentW",
+                                                    "TreatmentL","TreatmentH",
+                                                    "Day_Scale_7", "Night_Scale_7"),
+                                         labels = c("Day Temperature:Water Treatment", 
+                                                    "Day Temperature: Low SA Treatment", 
+                                                    "Day Temperature: High SA Treatment", 
+                                                    "Day Temperature: Night Temperature",
+                                                    "(Intercept)", "Water Treatment", 
+                                                    "Low SA Treatment", "High SA Treatment", 
+                                                    "Day Temperature", "Night Temperature"))
+
 output.all.rootdays$sigvar <-
   ifelse(output.all.rootdays$Pr...z.. < 0.05, 1, 0)
 
@@ -220,12 +239,15 @@ ggplot(output.all.rootdays[-which(output.all.rootdays$coefficients=="(Intercept)
             col="black",size=2)+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Effect")+
+                       name="log(Effect)")+
   geom_text(aes(label = paste0(round(Estimate,2))))+
   ylab("Variables & Interactions")+
   xlab("Species")+
-  ggtitle("Temperature & Treatments Interactions with Days Until Germination")+
-  theme_grey()
+  labs(title = "Temperature & Treatments Interactions with Days Until Germination")+
+  theme_grey()+
+  theme(plot.title = element_text(margin = margin(l = -35)))
+
+
 
 ## emergence glm
 
@@ -259,6 +281,14 @@ for (s in species){
 
 output.all.shootdays <- do.call(rbind, shootDays.output)
 
+output.all.shootdays$coefficients<-factor(output.all.shootdays$coefficients,
+                                         levels = c("(Intercept)", "TreatmentW",
+                                                    "TreatmentL","TreatmentH",
+                                                    "Day_Scale_7","Night_Scale_7"),
+                                         labels = c("(Intercept)", "Water Treatment", 
+                                                    "Low SA Treatment", "High SA Treatment", 
+                                                    "Day Temperature", "Night Temperature"))
+
 output.all.shootdays$sigvar <-
   ifelse(output.all.shootdays$Pr...z.. < 0.05, 1, 0)
 
@@ -273,7 +303,7 @@ ggplot(output.all.shootdays[-which(output.all.shootdays$coefficients=="(Intercep
             col="black",size=2)+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Effect")+
+                       name="log(Effect)")+
   geom_text(aes(label = paste0(round(Estimate,2))))+
   ylab("Variables & Interactions")+
   xlab("Species")+
@@ -334,6 +364,22 @@ for (s in species) {
 
 output.all.rootrate <- do.call(rbind, root.rate.output)
 
+output.all.rootrate$coefficients<-factor(output.all.rootrate$coefficients,
+                                         levels = c("Day_Scale_7:TreatmentW",
+                                                    "Day_Scale_7:TreatmentL",
+                                                    "Day_Scale_7:TreatmentH",
+                                                    "Day_Scale_7:Night_Scale_7",
+                                                    "(Intercept)", "TreatmentW",
+                                                    "TreatmentL","TreatmentH",
+                                                    "Day_Scale_7","Night_Scale_7"),
+                                         labels = c("Day Temperature:Water Treatment",
+                                                    "Day Temperature: Low SA Treatment", 
+                                                    "Day Temperature: High SA Treatment",
+                                                    "Day Temperature: Night Temperature",
+                                                    "(Intercept)", "Water Treatment", 
+                                                    "Low SA Treatment", "High SA Treatment", 
+                                                    "Day Temperature", "Night Temperature"))
+
 output.all.rootrate$sigvar <-
   ifelse(output.all.rootrate$Pr...t.. < 0.05, 1, 0)
 
@@ -347,12 +393,13 @@ ggplot(output.all.rootrate[-which(output.all.rootrate$coefficients=="(Intercept)
             col="black",size=2)+
   scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Effect")+
+                       name="log(Effect)")+
   geom_text(aes(label = paste0(round(Estimate,2))))+
   ylab("Variables & Interactions")+
   xlab("Species")+
   ggtitle("Temperature & Treatments Interactions with Germination Rate")+
-  theme_grey()
+  theme_grey()+
+  theme(plot.title = element_text(margin = margin(l = -20)))
 
 ##emerg
 
@@ -401,6 +448,28 @@ for (s in species) {
 
 output.all.shootrate <- do.call(rbind, shoot.rate.output)
 
+output.all.shootrate$coefficients<-factor(output.all.shootrate$coefficients,
+                                         levels = c("Day_Scale_7:TreatmentW",
+                                                    "Day_Scale_7:TreatmentL",
+                                                    "Day_Scale_7:TreatmentH",
+                                                    "Night_Scale_7:TreatmentW",
+                                                    "Night_Scale_7:TreatmentL",
+                                                    "Night_Scale_7:TreatmentH",
+                                                    "Day_Scale_7:Night_Scale_7",
+                                                    "(Intercept)", "TreatmentW",
+                                                    "TreatmentL","TreatmentH",
+                                                    "Day_Scale_7","Night_Scale_7"),
+                                         labels = c("Day Temperature: Water Treatment",
+                                                    "Day Temperature: Low SA Treatment", 
+                                                    "Day Temperature: High SA Treatment",
+                                                    "Night Temperature: Water Treatment",
+                                                    "Night Temperature: Low SA Treatment",
+                                                    "Night Temperature: High SA Treatment",
+                                                    "Day Temperature: Night Temperature",
+                                                    "(Intercept)", "Water Treatment", 
+                                                    "Low SA Treatment", "High SA Treatment", 
+                                                    "Day Temperature", "Night Temperature"))
+
 output.all.shootrate$sigvar <-
   ifelse(output.all.shootrate$Pr...t.. < 0.05, 1, 0)
 
@@ -414,12 +483,13 @@ ggplot(output.all.shootrate[-which(output.all.shootrate$coefficients=="(Intercep
             col="black",size=2)+
   scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="Effect")+
+                       name="log(Effect)")+
   geom_text(aes(label = paste0(round(Estimate,2))))+
   ylab("Variables & Interactions")+
   xlab("Species")+
-  ggtitle("Temperature & Treatments Interactions with Germination Rate")+
-  theme_grey()
+  ggtitle("Temperature & Treatments Interactions with Emergence Rate")+
+  theme_grey()+
+  theme(plot.title = element_text(margin = margin(l = -25)))
 
 
 ###########

@@ -23,9 +23,9 @@ data.list<-list()
 species<-c("POSE","ARTR","ACMI","ELEL")
 
 ##set wd
-#setwd("C:/Users/18034/Dropbox/PC/Desktop/R_code/R_code2")
+setwd("C:/Users/18034/Dropbox/PC/Desktop/R_code/R_code2")
 
-# Read in data ####
+## Read in data ####
 for (s in species ) {
   raw.read<-read.csv(paste0("Data/",s,"_Data/",s,"_Data_FINAL.csv"))
   if (any(is.na(raw.read$Group))){

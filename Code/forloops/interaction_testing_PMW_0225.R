@@ -48,6 +48,10 @@ exp(groups)
 
 intplots <-list()
 
+################################3
+####Days Until Germ
+#Only Significant for ACMI###
+
 for (s in species){
   temp.interaction<-short.data.list2[[s]]
   temp.interaction$interaction_axis<- log(temp.interaction$Day_Scale_7/temp.interaction$Night_Scale_7)
@@ -84,8 +88,9 @@ for (s in species){
 (intplots[["POSE"]] | intplots[["ACMI"]]) /
   (intplots[["ARTR"]] | intplots[["ELEL"]])
 
-
+###################
 ###Days til Emerg
+##Significant for NONE
 
 intplots1 <- list()
 
@@ -125,8 +130,9 @@ for (s in species){
 (intplots1[["POSE"]] | intplots1[["ACMI"]]) /
   (intplots1[["ARTR"]] | intplots1[["ELEL"]])
 
-
+###################
 ###Germ rate
+##Significant for ACMI and ELEL
 
 intplots2 <- list()
 
@@ -166,8 +172,10 @@ for (s in species){
 (intplots2[["POSE"]] | intplots2[["ACMI"]]) /
   (intplots2[["ARTR"]] | intplots2[["ELEL"]])
 
-
+##################
 ###Emerg rate
+##Significant for ELEL                     
+
 
 intplots3 <- list()
 

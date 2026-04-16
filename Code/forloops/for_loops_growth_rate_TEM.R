@@ -2,6 +2,7 @@
 #str(data.list)
 clean.data.list<-list()
 
+
 # GROWTH RATE Calculations #####
 
 for (s in species) {

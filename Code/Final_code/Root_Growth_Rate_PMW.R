@@ -1,7 +1,7 @@
-######################################
+# Create Open List For Clean Data
 clean.data.list<-list()
 
-# GROWTH RATE Calculations #####
+# Run ForLoop for Growth Rates after Seed Germinates
 
 for (s in species) {
   temp<-data.list[[s]]
@@ -18,7 +18,7 @@ for (s in species) {
   
   ## Calculate growth rates
   ##create root code vector
-  Root_Code<-c(1,2,3,4) ##Why no 5?##
+  Root_Code<-c(1,2,3,4) 
   ## create root length mid vector 
   Root_Length_mid<-c(0.5,5,10,20)
   #combine vectors
@@ -27,7 +27,7 @@ for (s in species) {
   temp$Root_Length<-Root_match$Length[match(temp$Root_Pheno_Code,Root_match$Code)]
   
   ##create shoot code vector
-  Shoot_Code<-c(6,7,8) ##9?##
+  Shoot_Code<-c(6,7,8)
   ## create shoot length mid vector
   Shoot_Length_mid<-c(0.5,10,20)
   ##combine vectors
@@ -69,7 +69,7 @@ for (s in species) {
 }
 
 ## aggregate data for each cuvette for each day ####
-#str(clean.data.list)
+# Open List
 agg.list<- list()
 
 for (s in species) {
@@ -85,16 +85,12 @@ for (s in species) {
                      "Group","Avg_Root_rate","Avg_Shoot_rate")
   
   
-  #temp_agg$Temp_Ratio<-temp_agg$Day_Temp/temp_agg$Night_Temp
   temp_agg$Treatment<-as.factor(paste0(temp_agg$Treatment))
-  #temp_agg$Day_Scale_7<-scale(temp_agg$Day_Temp)
-  #temp_agg$Night_Scale_7<-scale(temp_agg$Night_Temp)
   agg.list[[s]] <- temp_agg
 }
 
 ## aggregate data for each cuvette for each day for only seeds that germinated####
-#str(clean.data.list)
-agg.list.sub<- list()
+agg.list.sub.RGrate<- list()
 
 for (s in species) {
   temp <-clean.data.list[[s]]
@@ -109,40 +105,21 @@ for (s in species) {
   names(temp_agg)<-c("Day_Scale_7","Night_Scale_7","Treatment",
                      "Group","Avg_Root_rate","Avg_Shoot_rate")
   
-  
-  #temp_agg$Temp_Ratio<-temp_agg$Day_Temp/temp_agg$Night_Temp
   temp_agg$Treatment<-as.factor(paste0(temp_agg$Treatment))
-  #temp_agg$Day_Scale_7<-scale(temp_agg$Day_Temp)
-  #temp_agg$Night_Scale_7<-scale(temp_agg$Night_Temp)
-  agg.list.sub[[s]] <- temp_agg
+  agg.list.sub.RGrate[[s]] <- temp_agg
 }
 
-#Germ
-
-# for (s in species){
-#   print(s)
-#   temp_agg2 <- agg.list.sub[[s]] 
-#   
-#   global.model<-glm(Avg_Root_rate~Day_Scale_7+Night_Scale_7+
-#                       Day_Scale_7:Treatment+Night_Scale_7:Treatment+
-#                       Treatment+Day_Scale_7:Night_Scale_7+
-#                       Day_Scale_7:Night_Scale_7:Treatment,
-#                     family=Gamma(link = "log"),data=temp_agg2)
-#   
-#   models.step<- step(global.model)
-#   
-# }
+# Run Step Function Forward With Backwards Look To Get Final Models
 
 for (s in species){
   
   print(s)
-  temp_agg2 <- agg.list.sub[[s]] # pull out the data
+  temp_agg2 <- agg.list.sub.RGrate[[s]] # pull out the data
   rgrowth_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","Avg_Root_rate") #select the columns I want for the germ model
   temp_agg2_rgrowth<-temp_agg2[,rgrowth_cols] # make a new dataframe with just those values
   
   #fit the null model
   null.model<-glm(Avg_Root_rate~. ,
-                  #should link be inverse?
                   family=Gamma(link = "log"),data=temp_agg2_rgrowth)
   
   #fit the global models
@@ -158,19 +135,20 @@ for (s in species){
   print(summary(models.step))
   }
   
-#models.step$anova
-  
 root.rate.full.list <- list()
 root.rate.output <- list()
+
+## Fitting and Getting Model Output for Each Species ####
 
 for (s in species) {
 
   print(s)
-  temp_agg2 <- agg.list.sub[[s]] # pull out the data
+  temp_agg2 <- agg.list.sub.RGrate[[s]] # pull out the data
   temp_agg3<-temp_agg2[-which(temp_agg2$Avg_Root_rate==0),]
   rgrowth_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","Avg_Root_rate") #select the columns I want for the germ model
   temp_agg3_rgrowth<-temp_agg2[,rgrowth_cols] # make a new dataframe with just those values
   
+  # create glm of root growth rate
   rootratefit.full<-glm(Avg_Root_rate~Day_Scale_7+Night_Scale_7+Treatment,
                             family=Gamma(link="log"),data=temp_agg3_rgrowth)
   print(summary(rootratefit.full))
@@ -205,16 +183,14 @@ for (s in species) {
   
   root.rate.full.list[[s]] <- rootratefit.full
   
-  rootratefit.full$coefficients
-  
-  summary(rootratefit.full)$coefficients
-  
   rootraterast <- data.frame(summary(rootratefit.full)$coefficients)
   rootraterast$Species <- s
   rootraterast$coefficients <- rownames(rootraterast)
   root.rate.output[[s]]<-rootraterast
 
 }
+
+## Create Raster Figures of Containing Each Species
 
 output.all.rootrate <- do.call(rbind, root.rate.output)
 
@@ -226,10 +202,10 @@ output.all.rootrate$coefficients<-factor(output.all.rootrate$coefficients,
                                                     "(Intercept)", "TreatmentW",
                                                     "TreatmentL","TreatmentH",
                                                     "Day_Scale_7","Night_Scale_7"),
-                                         labels = c("Day Temperature:Water Treatment",
-                                                    "Day Temperature: Low SA Treatment", 
-                                                    "Day Temperature: High SA Treatment",
-                                                    "Day Temperature: Night Temperature",
+                                         labels = c("Day Temperature: \n Water Treatment", 
+                                                    "Day Temperature: \n Low SA Treatment", 
+                                                    "Day Temperature: \n High SA Treatment", 
+                                                    "Day Temperature: \n Night Temperature",
                                                     "(Intercept)", "Water Treatment", 
                                                     "Low SA Treatment", "High SA Treatment", 
                                                     "Day Temperature", "Night Temperature"))
@@ -237,25 +213,21 @@ output.all.rootrate$coefficients<-factor(output.all.rootrate$coefficients,
 output.all.rootrate$sigvar <-
   ifelse(output.all.rootrate$Pr...t.. < 0.05, 1, 0)
 
-rootrate_sig<-output.all.rootrate[which(output.all.rootrate$sigvar==1),]         
+rootrate_sig<-output.all.rootrate[which(output.all.rootrate$sigvar==1),]     
 
-ggplot(output.all.rootrate[-which(output.all.rootrate$coefficients=="(Intercept)"),],
+Root_Growth_Raster <- ggplot(output.all.rootrate[-which(output.all.rootrate$coefficients=="(Intercept)"),],
        aes(x=Species,y=coefficients))+
   geom_raster(aes(fill=Estimate))+
   geom_tile(data =rootrate_sig[-which(rootrate_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",size=2)+
+            col="black",linewidth=2)+
   scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                        midpoint = 0, space = "Lab",
-                       #log(Effect) because of the Gamma distribution
                        name="log(Effect)")+
-  geom_text(aes(label = paste0(round(Estimate,4))))+
+  #geom_text(aes(label = paste0(round((exp(Estimate)*sign(Estimate)),4))))+
   ylab("")+
   xlab("")+
-  #ylab("Variables & Interactions")+
-  #xlab("Species")+
-  #ggtitle("Temperature & Treatments Interactions with Root Growth Rate")+
   theme_grey()+
-  theme(plot.title = element_text(margin = margin(l = -20)))
+  theme(legend.position="bottom")
 
-
+ggsave("Figures/rootrate_sig.png", Root_Growth_Raster)

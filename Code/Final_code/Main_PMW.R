@@ -1,17 +1,9 @@
 ########################################
 rm(list=ls()) # clear workspace
 # read in libraries ####
-library(raster)
 library(terra)
-library(lme4)
-library(lmerTest)
-library(emmeans)
-library(glmmTMB)
 library(tidyverse)
-library(plotly)
-library(Cairo)
-library(dplyr)
-library(tidyr)
+library(patchwork)
 
 ######################################
 #create open list
@@ -28,7 +20,22 @@ for (s in species ) {
   data.list[[s]]<-raw.read2
 }
 
+
 source("code/Final_Code/Days_til_Germ_PMW.R")
 source("code/Final_Code/Days_til_Emerg_PMW.R")
 source("code/Final_Code/Shoot_Growth_Rate_PMW.R")
 source("code/Final_Code/Root_Growth_Rate_PMW.R")
+source("code/Final_Code/BoxPlots_PMW.R")
+source("code/Final_Code/Interaction_Plots_PMW.R")
+
+Root_Rasters <- Germination_Rasters + Root_Growth_Raster + 
+  plot_layout(ncol=2, axis_titles = 'collect_y', axes = 'collect_y')+
+  plot_annotation(tag_levels = 'a')
+
+ggsave("Figures/Side_by_Root.png", Root_Rasters)
+
+Shoot_Rasters <- Emergence_Rasters + Shoot_Growth_Raster + 
+  plot_layout(ncol=2, axis_titles = 'collect_y', axes = 'collect_y')+
+  plot_annotation(tag_levels = 'a')
+
+ggsave("Figures/Side_by_Shoot.png", Shoot_Rasters)

@@ -1,19 +1,19 @@
+# Create Open List For Clean Data
 clean.data.list<-list()
-
+# Run a forloop to clean data and calculate emergence rate & days until emergence
 for (s in species){
   temp<-data.list[[s]]
   
   ## clean data ####
   temp$Root_Pheno_Code<-as.numeric(paste0(temp$Root_Pheno_Code))
   temp$Shoot_Pheno_Code<-as.numeric(paste0(temp$Shoot_Pheno_Code))
-  
+  # Create Empty Columns To Fill
   temp$germ_rate<-NA
   temp$emerg_rate<-NA
   temp$days_til_germ<-NA
   temp$days_til_emerg<-NA
   
   ###  calculate days til emergence and germination ####
-  
   for (i in 1:max(temp$Group)){
     for (t in unique(temp$Treatment)) {
       for (c in 1:4) {
@@ -47,9 +47,8 @@ for (s in species){
 }
 
 ### aggregate data for each cuvette for each day ######
-#view(clean.data.list)
-#str(clean.data.list)
 
+# Open list for aggregated data
 clean.data.list.short<-list()
 
 for (s in species){
@@ -74,9 +73,7 @@ for (s in species){
                           "germ_rate",
                           "emerg_rate")]
   
-  #instead of unique() which would create a seed for each day
-  
-  
+  # calculate means of emergence and germination by individual seed
   indiv <- aggregate(cbind(days_til_emerg, 
                            days_til_germ,
                            germ_rate,
@@ -94,12 +91,14 @@ for (s in species){
   
 }
 
-short.data.list2 <- list()
+# Create second open list 
+# This one labelled so that it can be used in boxplots as well
+short.data.list2.Emerg <- list()
 
 for (s in species){
   temp3<-clean.data.list.short[[s]]
   
-  ###  calculate days til emergence and germination ####
+  # Changing Zeroes to NA for seeds that never germinated or emerged
   
   for (i in 1:max(temp3$Group)){
     for (t in unique(temp3$Treatment)) {
@@ -114,20 +113,18 @@ for (s in species){
     }
   }
   
-  short.data.list2[[s]]<-temp3
+  short.data.list2.Emerg[[s]]<-temp3
   
 }
 
-#Step
+# Run Step Function Forward With Backwards Look To Get Final Models
 
 for (s in species){
   
   print(s)
-  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  temp_agg2 <- short.data.list2.Emerg[[s]] # pull out the data
   emerg_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_emerg") #select the columns I want for the germ model
   temp_agg2_emerg<-temp_agg2[,emerg_cols] # make a new dataframe with just those values
-  
-  
   
   #fit the null model
   null.model<-glm(days_til_emerg~. ,
@@ -150,9 +147,11 @@ for (s in species){
 shootDaysfit.full.list <- list()
 shootDays.output <- list()
 
+## Fitting and Getting Model Output for Each Species ####
+
 for (s in species){
   print(s)
-  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  temp_agg2 <- short.data.list2.Emerg[[s]] # pull out the data
   emerg_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_emerg") #select the columns I want for the germ model
   temp_agg2_emerg<-temp_agg2[,emerg_cols] # make a new dataframe with just those values
   
@@ -162,10 +161,6 @@ for (s in species){
   
   shootDaysfit.full.list[[s]] <- shootDaysfull
   
-  shootDaysfull$coefficients
-  
-  summary(rootDaysfull)$coefficients
-  
   shootDaysrast <- data.frame(summary(shootDaysfull)$coefficients)
   shootDaysrast$Species <- s
   shootDaysrast$coefficients <- rownames(shootDaysrast)
@@ -173,35 +168,58 @@ for (s in species){
   
 }
 
+## Create Raster Figures of Containing Each Species
+
 output.all.shootdays <- do.call(rbind, shootDays.output)
 
+# add in dummy coefficients 
+
+output.all.shootdays[25,] <- c(NA,NA,NA,100,"POSE","Day_Scale_7:TreatmentW")
+output.all.shootdays[26,] <- c(NA,NA,NA,100,"POSE","Day_Scale_7:TreatmentL")
+output.all.shootdays[27,] <- c(NA,NA,NA,100,"POSE","Day_Scale_7:TreatmentH")
+output.all.shootdays[28,] <- c(NA,NA,NA,100,"POSE","Day_Scale_7:Night_Scale_7")
+
 output.all.shootdays$coefficients<-factor(output.all.shootdays$coefficients,
-                                          levels = c("(Intercept)", "TreatmentW",
+                                          levels = c("Day_Scale_7:TreatmentW",
+                                                     "Day_Scale_7:TreatmentL", 
+                                                     "Day_Scale_7:TreatmentH",
+                                                     "Day_Scale_7:Night_Scale_7",
+                                                     "(Intercept)", "TreatmentW",
                                                      "TreatmentL","TreatmentH",
-                                                     "Day_Scale_7","Night_Scale_7"),
-                                          labels = c("(Intercept)", "Water Treatment", 
+                                                     "Day_Scale_7", "Night_Scale_7"),
+                                          labels = c("Day Temperature: \n Water Treatment", 
+                                                     "Day Temperature: \n Low SA Treatment", 
+                                                     "Day Temperature: \n High SA Treatment", 
+                                                     "Day Temperature: \n Night Temperature",
+                                                     "(Intercept)", "Water Treatment", 
                                                      "Low SA Treatment", "High SA Treatment", 
                                                      "Day Temperature", "Night Temperature"))
 
+
 output.all.shootdays$sigvar <-
-  ifelse(output.all.shootdays$Pr...z.. < 0.05, 1, 0)
+  ifelse(as.numeric(output.all.shootdays$Pr...z..) < 0.05, 1, 0)
 
 
 shootDays_sig<-output.all.shootdays[which(output.all.shootdays$sigvar==1),]         
 
-ggplot(output.all.shootdays[-which(output.all.shootdays$coefficients=="(Intercept)"),],
+Rounding<- function (x) {ifelse (is.numeric(x),round(x,4),x)} #do we need this any more?
+
+output.all.shootdays$Estimate <- as.numeric(output.all.shootdays$Estimate)
+
+Emergence_Rasters <- ggplot(output.all.shootdays[-which(output.all.shootdays$coefficients=="(Intercept)"),],
        aes(x=Species,y=coefficients))+
-  geom_raster(aes(fill=Estimate))+
+  geom_raster(aes(fill=as.numeric(Estimate)))+
   geom_tile(data =shootDays_sig[-which(shootDays_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",size=2)+
-  scale_fill_gradient2(low = "blue", high = "red", mid = "white",
+            col="black",linewidth=2)+
+  scale_fill_gradient2(low = "blue", high = "red", mid = "white",na.value = "transparent",
                        midpoint = 0, space = "Lab",
                        name="log(Effect)")+
-  geom_text(aes(label = paste0(round(Estimate,2))))+
+  #geom_text(aes(label = (label = ifelse(is.na(Estimate), "", paste0(round(as.numeric((exp(Estimate)*sign(Estimate))),4))))))+
   ylab("")+
   xlab("")+
-  #ylab("Variables & Interactions")+
-  #xlab("Species")+
-  #ggtitle("Temperature & Treatments Interactions with Days Until Emergence") +
-  theme_grey()
+  theme_grey()+
+  theme(legend.position="bottom") # using base_size = 22 will increase text size
+
+ggsave("Figures/shootDays_sig.png", Emergence_Rasters)
+

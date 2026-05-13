@@ -1,13 +1,13 @@
-#str(data.list)
+# Create Open List For Clean Data
 clean.data.list<-list()
-
+# Run a forloop to clean data and calculate emergence rate & days until emergence
 for (s in species){
   temp<-data.list[[s]]
   
   ## clean data ####
   temp$Root_Pheno_Code<-as.numeric(paste0(temp$Root_Pheno_Code))
   temp$Shoot_Pheno_Code<-as.numeric(paste0(temp$Shoot_Pheno_Code))
-  
+  # Create Empty Columns To Fill
   temp$germ_rate<-NA
   temp$emerg_rate<-NA
   temp$days_til_germ<-NA
@@ -48,6 +48,8 @@ for (s in species){
 }
 
 ### aggregate data for each cuvette for each day ######
+
+# Open list for aggregated data
 clean.data.list.short<-list()
 
 for (s in species){
@@ -72,9 +74,7 @@ for (s in species){
                           "germ_rate",
                           "emerg_rate")]
   
-  #instead of unique() which would create a seed for each day
-  
-  
+  # calculate means of emergence and germination by individual seed
   indiv <- aggregate(cbind(days_til_emerg, 
                            days_til_germ,
                            germ_rate,
@@ -92,12 +92,14 @@ for (s in species){
   
 }
 
-short.data.list2 <- list()
+# Create second open list
+# This one labelled so that it can be used in boxplots as well
+short.data.list2.Germ <- list()
 
 for (s in species){
   temp3<-clean.data.list.short[[s]]
   
-  ###  calculate days til emergence and germination ####
+  # Changing Zeroes to NA for seeds that never germinated or emerged
   
   for (i in 1:max(temp3$Group)){
     for (t in unique(temp3$Treatment)) {
@@ -112,20 +114,19 @@ for (s in species){
     }
   }
   
-  short.data.list2[[s]]<-temp3
+  short.data.list2.Germ[[s]]<-temp3
 }  
 
-######################################
-#Step
+# Run Step Function Forward With Backwards Look To Get Final Models
+
 for (s in species){
   
   print(s)
-  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  temp_agg2 <- short.data.list2.Germ[[s]] # pull out the data
   germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_germ") #select the columns I want for the germ model
   temp_agg2_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
   
-  
-  
+
   #fit the null model
   null.model<-glm(days_til_germ~. ,
                   family=poisson(link = "log"),data=temp_agg2_germ)
@@ -141,23 +142,20 @@ for (s in species){
   models.step<- step(null.model,direction="both",scope = list(lower=null.model, upper=global.model))
   
   print(summary(models.step))
-  #models.step$anova
   
 }
-
-
-#parameters from step
 
 rootDaysfit.full.list <- list()
 rootDays.output <- list()
 
+## Fitting and Getting Model Output for Each Species ####
+
 for (s in species){
   print(s)
-  temp_agg2 <- short.data.list2[[s]] # pull out the data
+  temp_agg2 <- short.data.list2.Germ[[s]] # pull out the data
   germ_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","days_til_germ") #select the columns I want for the germ model
   temp_agg2_germ<-temp_agg2[,germ_cols] # make a new dataframe with just those values
   
-  ##if ELEL
   # Create glm of days til germination
   rootDaysfull<-glm(days_til_germ~Treatment+Day_Scale_7+Night_Scale_7,
                     family=poisson(link = "log"),data=temp_agg2_germ)
@@ -185,10 +183,6 @@ for (s in species){
   }
   rootDaysfit.full.list[[s]] <- rootDaysfull
   
-  rootDaysfull$coefficients
-  
-  summary(rootDaysfull)$coefficients
-  
   rootDaysrast <- data.frame(summary(rootDaysfull)$coefficients)
   rootDaysrast$Species <- s
   rootDaysrast$coefficients <- rownames(rootDaysrast)
@@ -212,33 +206,36 @@ output.all.rootdays$coefficients<-factor(output.all.rootdays$coefficients,
                                                     "(Intercept)", "TreatmentW",
                                                     "TreatmentL","TreatmentH",
                                                     "Day_Scale_7", "Night_Scale_7"),
-                                         labels = c("Day Temperature:Water Treatment", 
-                                                    "Day Temperature: Low SA Treatment", 
-                                                    "Day Temperature: High SA Treatment", 
-                                                    "Day Temperature: Night Temperature",
+                                         labels = c("Day Temperature: \n Water Treatment", 
+                                                    "Day Temperature: \n Low SA Treatment", 
+                                                    "Day Temperature: \n High SA Treatment", 
+                                                    "Day Temperature: \n Night Temperature",
                                                     "(Intercept)", "Water Treatment", 
                                                     "Low SA Treatment", "High SA Treatment", 
                                                     "Day Temperature", "Night Temperature"))
 
+## Create Raster Figures of Containing Each Species
+
 output.all.rootdays$sigvar <-
   ifelse(output.all.rootdays$Pr...z.. < 0.05, 1, 0)
 
-rootDays_sig<-output.all.rootdays[which(output.all.rootdays$sigvar==1),]         
+rootDays_sig<-output.all.rootdays[which(output.all.rootdays$sigvar==1),]    
 
-ggplot(output.all.rootdays[-which(output.all.rootdays$coefficients=="(Intercept)"),],
+Germination_Rasters <- ggplot(output.all.rootdays[-which(output.all.rootdays$coefficients=="(Intercept)"),],
        aes(x=Species,y=coefficients))+
   geom_raster(aes(fill=Estimate))+
   geom_tile(data =rootDays_sig[-which(rootDays_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",size=2)+
+            col="black",linewidth=2)+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white",
                        midpoint = 0, space = "Lab",
                        name="log(Effect)")+
-  geom_text(aes(label = paste0(round(Estimate,2))))+
+  #geom_text(aes(label = paste0(round((exp(Estimate)*sign(Estimate)),4))))+
   ylab("")+
   xlab("")+
-  #ylab("Variables & Interactions")+
-  #xlab("Species")+
-  #labs(title = "Temperature & Treatments Interactions with Days Until Germination")+
   theme_grey()+
-  theme(plot.title = element_text(margin = margin(l = -35)))
+  theme(legend.position="bottom")
+
+Germination_Rasters
+
+ggsave("Figures/rootDays_sig.png", Germination_Rasters)

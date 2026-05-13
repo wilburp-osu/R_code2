@@ -1,7 +1,7 @@
-######################################
+# Create Open List For Clean Data
 clean.data.list<-list()
 
-# GROWTH RATE Calculations #####
+# Run ForLoop for Growth Rates after Seed Germinates
 
 for (s in species) {
   temp<-data.list[[s]]
@@ -69,7 +69,7 @@ for (s in species) {
 }
 
 ## aggregate data for each cuvette for each day ####
-#str(clean.data.list)
+# Open List For Aggregation
 agg.list<- list()
 
 for (s in species) {
@@ -84,21 +84,15 @@ for (s in species) {
   names(temp_agg)<-c("Day_Scale_7","Night_Scale_7","Treatment",
                      "Group","Avg_Root_rate","Avg_Shoot_rate")
   
-  
-  #temp_agg$Temp_Ratio<-temp_agg$Day_Temp/temp_agg$Night_Temp
   temp_agg$Treatment<-as.factor(paste0(temp_agg$Treatment))
-  #temp_agg$Day_Scale_7<-scale(temp_agg$Day_Temp)
-  #temp_agg$Night_Scale_7<-scale(temp_agg$Night_Temp)
   agg.list[[s]] <- temp_agg
 }
 
 ## aggregate data for each cuvette for each day for only seeds that germinated####
-#str(clean.data.list)
-agg.list.sub<- list()
+agg.list.sub.EGrate<- list()
 
 for (s in species) {
   temp <-clean.data.list[[s]]
-  temp2<-temp[-which(temp$Avg_Root_rate==0),]
   ## is it right to do this with Shoot rate? its the only way to get it to work
   temp2<-temp[-which(temp$Avg_Shoot_rate==0),]
   temp_agg<-aggregate(cbind(temp2$Avg_Root_rate,
@@ -111,40 +105,22 @@ for (s in species) {
   names(temp_agg)<-c("Day_Scale_7","Night_Scale_7","Treatment",
                      "Group","Avg_Root_rate","Avg_Shoot_rate")
   
-  
-  #temp_agg$Temp_Ratio<-temp_agg$Day_Temp/temp_agg$Night_Temp
   temp_agg$Treatment<-as.factor(paste0(temp_agg$Treatment))
-  #temp_agg$Day_Scale_7<-scale(temp_agg$Day_Temp)
-  #temp_agg$Night_Scale_7<-scale(temp_agg$Night_Temp)
-  agg.list.sub[[s]] <- temp_agg
+  agg.list.sub.EGrate[[s]] <- temp_agg
 }
 
-#Germ
+# Run Step Function Forward With Backwards Look To Get Final Models
 
-# for (s in species){
-#   print(s)
-#   temp_agg2 <- agg.list.sub[[s]] 
-#   
-#   global.model<-glm(Avg_Root_rate~Day_Scale_7+Night_Scale_7+
-#                       Day_Scale_7:Treatment+Night_Scale_7:Treatment+
-#                       Treatment+Day_Scale_7:Night_Scale_7+
-#                       Day_Scale_7:Night_Scale_7:Treatment,
-#                     family=Gamma(link = "log"),data=temp_agg2)
-#   
-#   models.step<- step(global.model)
-#   
-# }
 
 for (s in species){
   
   print(s)
-  temp_agg2 <- agg.list.sub[[s]] # pull out the data
+  temp_agg2 <- agg.list.sub.EGrate[[s]] # pull out the data
   sgrowth_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","Avg_Shoot_rate") #select the columns I want for the germ model
   temp_agg2_sgrowth<-temp_agg2[,sgrowth_cols] # make a new dataframe with just those values
   
   #fit the null model
   null.model<-glm(Avg_Shoot_rate~. ,
-                  #should link be inverse?
                   family=Gamma(link="log"),data=temp_agg2_sgrowth)
   
   #fit the global models
@@ -160,19 +136,20 @@ for (s in species){
   print(summary(models.step))
 }
 
-#models.step$anova
-
 shoot.rate.full.list <- list()
 shoot.rate.output <- list()
+
+## Fitting and Getting Model Output for Each Species ####
 
 for (s in species) {
   
   print(s)
-  temp_agg2 <- agg.list.sub[[s]] # pull out the data
+  temp_agg2 <- agg.list.sub.EGrate[[s]] # pull out the data
   temp_agg3<-temp_agg2[-which(temp_agg2$Avg_Shoot_rate==0),]
   sgrowth_cols<-c("Treatment","Day_Scale_7","Night_Scale_7","Avg_Shoot_rate") #select the columns I want for the germ model
   temp_agg3_sgrowth<-temp_agg2[,sgrowth_cols] # make a new dataframe with just those values
   
+  # create glm of root growth rate
   shootratefit.full<-glm(Avg_Shoot_rate~Day_Scale_7+Night_Scale_7+Treatment,
                         family=Gamma(link="log"),data=temp_agg3_sgrowth)
   print(summary(shootratefit.full))
@@ -211,7 +188,15 @@ for (s in species) {
   
 }
 
+## Create Raster Figures of Containing Each Species
+
 output.all.shootrate <- do.call(rbind, shoot.rate.output)
+
+# Input dummy coefficients
+
+output.all.shootrate[28,] <- c(NA,NA,NA,100,"POSE","Day_Scale_7:TreatmentW")
+output.all.shootrate[29,] <- c(NA,NA,NA,100,"POSE","Day_Scale_7:TreatmentL")
+output.all.shootrate[30,] <- c(NA,NA,NA,100,"POSE","Day_Scale_7:TreatmentH")
 
 output.all.shootrate$coefficients<-factor(output.all.shootrate$coefficients,
                                          levels = c("Day_Scale_7:TreatmentW",
@@ -221,34 +206,36 @@ output.all.shootrate$coefficients<-factor(output.all.shootrate$coefficients,
                                                     "(Intercept)", "TreatmentW",
                                                     "TreatmentL","TreatmentH",
                                                     "Day_Scale_7","Night_Scale_7"),
-                                         labels = c("Day Temperature:Water Treatment",
-                                                    "Day Temperature: Low SA Treatment", 
-                                                    "Day Temperature: High SA Treatment",
-                                                    "Day Temperature: Night Temperature",
+                                         labels = c("Day Temperature: \n Water Treatment", 
+                                                    "Day Temperature: \n Low SA Treatment", 
+                                                    "Day Temperature: \n High SA Treatment", 
+                                                    "Day Temperature: \n Night Temperature",
                                                     "(Intercept)", "Water Treatment", 
                                                     "Low SA Treatment", "High SA Treatment", 
                                                     "Day Temperature", "Night Temperature"))
 
 output.all.shootrate$sigvar <-
-  ifelse(output.all.shootrate$Pr...t.. < 0.05, 1, 0)
+  ifelse(as.numeric(output.all.shootrate$Pr...t..) < 0.05, 1, 0)
 
 shootrate_sig<-output.all.shootrate[which(output.all.shootrate$sigvar==1),]         
 
-ggplot(output.all.shootrate[-which(output.all.shootrate$coefficients=="(Intercept)"),],
+Rounding<- function (x) {ifelse (is.numeric(x),round(x,4),x)}
+
+output.all.shootrate$Estimate <- as.numeric(output.all.shootrate$Estimate)
+
+Shoot_Growth_Raster <- ggplot(output.all.shootrate[-which(output.all.shootrate$coefficients=="(Intercept)"),],
        aes(x=Species,y=coefficients))+
-  geom_raster(aes(fill=Estimate))+
+  geom_raster(aes(fill=as.numeric(Estimate)))+
   geom_tile(data =shootrate_sig[-which(shootrate_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",size=2)+
-  scale_fill_gradient2(low = "red", high = "blue", mid = "white",
+            col="black",linewidth=2)+
+  scale_fill_gradient2(low = "red", high = "blue", mid = "white", na.value = "transparent",
                        midpoint = 0, space = "Lab",
-                       #log(Effect) because of the Gamma distribution
                        name="log(Effect)")+
-  geom_text(aes(label = paste0(round(Estimate,4))))+
+ # geom_text(aes(label = (label = ifelse(is.na(Estimate), "", paste0(round(as.numeric((exp(Estimate)*sign(Estimate))),4))))))+
   ylab("")+
   xlab("")+
-  #ylab("Variables & Interactions")+
-  #xlab("Species")+
-  #ggtitle("Temperature & Treatments Interactions with Root Growth Rate")+
   theme_grey()+
-  theme(plot.title = element_text(margin = margin(l = -20)))
+  theme(legend.position="bottom")
+
+ggsave("Figures/shootrate_sig.png", Shoot_Growth_Raster)

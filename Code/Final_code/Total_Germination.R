@@ -79,7 +79,11 @@ for (s in species){
   
 }
 
-(plots.list[["POSE"]] | plots.list[["ACMI"]]) /
-  (plots.list[["ARTR"]] | plots.list[["ELEL"]])
+(plots.list[["POSE"]] + plots.list[["ACMI"]]) +
+  (plots.list[["ARTR"]] + plots.list[["ELEL"]])
 
+Total_germ.plotsall <- plots.list[["POSE"]] + plots.list[["ACMI"]] + 
+  plots.list[["ARTR"]] + plots.list[["ELEL"]]+
+  plot_layout(ncol= 2, axis_titles = 'collect', guides = 'collect')&
+  theme(legend.position="bottom")
 # run stats

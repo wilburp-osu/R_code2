@@ -220,11 +220,11 @@ Root_Growth_Raster <- ggplot(output.all.rootrate[-which(output.all.rootrate$coef
   geom_raster(aes(fill=Estimate))+
   geom_tile(data =rootrate_sig[-which(rootrate_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",linewidth=2)+
+            col="black",size=2)+
   scale_fill_gradient2(low = "red", high = "blue", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="log(Effect)")+
-  #geom_text(aes(label = paste0(round((exp(Estimate)*sign(Estimate)),4))))+
+                       name="log(Effect) (mm/day)")+
+  geom_text(aes(label = paste0(round(Estimate,3)), size = 6))+
   ylab("")+
   xlab("")+
   theme_grey()+

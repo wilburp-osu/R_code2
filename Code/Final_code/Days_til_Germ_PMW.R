@@ -226,11 +226,11 @@ Germination_Rasters <- ggplot(output.all.rootdays[-which(output.all.rootdays$coe
   geom_raster(aes(fill=Estimate))+
   geom_tile(data =rootDays_sig[-which(rootDays_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",linewidth=2)+
+            col="black",size=2)+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white",
                        midpoint = 0, space = "Lab",
-                       name="log(Effect)")+
-  #geom_text(aes(label = paste0(round((exp(Estimate)*sign(Estimate)),4))))+
+                       name="log(Effect) (mm/day)")+
+  geom_text(aes(label = paste0(round(Estimate,3)), size = 6))+
   ylab("")+
   xlab("")+
   theme_grey()+

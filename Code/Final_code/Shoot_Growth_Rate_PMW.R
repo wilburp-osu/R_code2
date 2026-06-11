@@ -228,14 +228,16 @@ Shoot_Growth_Raster <- ggplot(output.all.shootrate[-which(output.all.shootrate$c
   geom_raster(aes(fill=as.numeric(Estimate)))+
   geom_tile(data =shootrate_sig[-which(shootrate_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",linewidth=2)+
+            col="black",size=2)+
   scale_fill_gradient2(low = "red", high = "blue", mid = "white", na.value = "transparent",
                        midpoint = 0, space = "Lab",
-                       name="log(Effect)")+
- # geom_text(aes(label = (label = ifelse(is.na(Estimate), "", paste0(round(as.numeric((exp(Estimate)*sign(Estimate))),4))))))+
+                       name="log(Effect) (mm/day)")+
+  geom_text(aes(label = (label = ifelse(is.na(Estimate), "", paste0(round((Estimate),3)))), lsize = 6))+
   ylab("")+
   xlab("")+
   theme_grey()+
-  theme(legend.position="bottom")
+  theme(legend.position="bottom", legend.key.width = unit(1, 'cm'))
+
+print(Shoot_Growth_Raster)
 
 ggsave("Figures/shootrate_sig.png", Shoot_Growth_Raster)

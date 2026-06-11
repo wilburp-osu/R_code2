@@ -211,15 +211,16 @@ Emergence_Rasters <- ggplot(output.all.shootdays[-which(output.all.shootdays$coe
   geom_raster(aes(fill=as.numeric(Estimate)))+
   geom_tile(data =shootDays_sig[-which(shootDays_sig$coefficients=="(Intercept)"),], 
             aes(x=Species,y=coefficients, fill = sigvar),fill="transparent",
-            col="black",linewidth=2)+
+            col="black",size=2)+
   scale_fill_gradient2(low = "blue", high = "red", mid = "white",na.value = "transparent",
                        midpoint = 0, space = "Lab",
-                       name="log(Effect)")+
-  #geom_text(aes(label = (label = ifelse(is.na(Estimate), "", paste0(round(as.numeric((exp(Estimate)*sign(Estimate))),4))))))+
+                       name="log(Effect) (mm/day)")+
+  geom_text(aes(label = (label = ifelse(is.na(Estimate), "", paste0(round((Estimate),3)))), size = 6))+
   ylab("")+
   xlab("")+
   theme_grey()+
   theme(legend.position="bottom") # using base_size = 22 will increase text size
 
 ggsave("Figures/shootDays_sig.png", Emergence_Rasters)
+
 

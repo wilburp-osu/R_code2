@@ -161,7 +161,7 @@ for (s in species){
                  show.legend = F)+
     labs( title = paste0(s),
           x = "Day Temperature:Night Temperature Ratio",
-          y = "Root Growth Rate")+
+          y = "Root Growth Rate \n")+
     theme_minimal(base_size = 10)+
     scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
     scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
@@ -206,7 +206,7 @@ for (s in species){
                  aes(fill=Treatment),position = position_dodge2 (width = 0.75, preserve = "single"))+
     labs( title = paste0(s),
           x = "Day Temperature:Night Temperature Ratio",
-          y = "Shoot Growth Rate")+
+          y = "Shoot Growth Rate \n")+
     theme_minimal(base_size = 10)+
     scale_color_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
     scale_fill_manual(values=c("#CCCCCC", "#33a02c","#b2df8a","#1f78b4"))+
